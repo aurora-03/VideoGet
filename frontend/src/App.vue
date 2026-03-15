@@ -10,9 +10,6 @@
         <!-- Hero + 下载区域 -->
         <HeroSection />
 
-        <!-- 视频信息展示区域 -->
-        <VideoInfoSection />
-
         <!-- 功能特性 -->
         <FeaturesSection />
 
@@ -29,7 +26,6 @@
 <script setup>
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
-import VideoInfoSection from './components/VideoInfoSection.vue'
 import FeaturesSection from './components/FeaturesSection.vue'
 import PricingSection from './components/PricingSection.vue'
 import Footer from './components/Footer.vue'
