@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import os
@@ -20,6 +21,7 @@ class VideoURLRequest(BaseModel):
 
 
 class VideoInfoResponse(BaseModel):
+    url: str
     title: str
     author: str
     thumbnail: str

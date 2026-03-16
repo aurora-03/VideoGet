@@ -24,11 +24,11 @@ class VideoDownloader:
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
-                return self._format_video_info(info)
+                return self._format_video_info(info, url)
 
         return await asyncio.to_thread(_get_info)
 
-    def _format_video_info(self, info: Dict[str, Any]) -> Dict[str, Any]:
+    def _format_video_info(self, info: Dict[str, Any], url: str) -> Dict[str, Any]:
         """格式化视频信息"""
         # 获取标题
         title = info.get('title', 'Unknown Title')
@@ -61,6 +61,7 @@ class VideoDownloader:
         formats = self._get_available_formats(info)
 
         return {
+            'url': url,
             'title': title,
             'author': author,
             'thumbnail': thumbnail,
