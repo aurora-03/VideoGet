@@ -38,7 +38,12 @@ class TaskManager:
 
     def set_progress(self, task_id: str, progress: int) -> None:
         """设置下载进度"""
-        self.update_task(task_id, progress=min(max(progress, 0), 100))
+        normalized = min(max(progress, 0), 100)
+        with self._lock:
+            if task_id not in self._tasks:
+                return
+            current = int(self._tasks[task_id].get("progress", 0))
+            self._tasks[task_id]["progress"] = max(current, normalized)
 
     def set_complete(self, task_id: str, filename: str, download_url: str) -> None:
         """标记任务完成"""

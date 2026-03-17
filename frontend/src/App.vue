@@ -11,22 +11,20 @@
         <HeroSection @video-info="onVideoInfo" />
 
         <!-- 视频信息展示区域 -->
-        <VideoInfoSection
-          v-if="videoInfo"
-          :video-info="videoInfo"
-          :downloading="downloading"
-          :download-progress="downloadProgress"
-          :download-status="downloadStatus"
-          @select-format="onSelectFormat"
-          @update-options="onUpdateOptions"
-          @start-download="onStartDownload"
-        />
+        <div v-if="videoInfo" ref="videoInfoSectionRef">
+          <VideoInfoSection
+            :video-info="videoInfo"
+            :downloading="downloading"
+            :download-progress="downloadProgress"
+            :download-status="downloadStatus"
+            @select-format="onSelectFormat"
+            @update-options="onUpdateOptions"
+            @start-download="onStartDownload"
+          />
+        </div>
 
         <!-- 功能特性 -->
         <FeaturesSection />
-
-        <!-- 定价/会员 -->
-        <PricingSection />
       </main>
 
       <!-- 页脚 -->
@@ -36,13 +34,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import axios from 'axios'
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
 import VideoInfoSection from './components/VideoInfoSection.vue'
 import FeaturesSection from './components/FeaturesSection.vue'
-import PricingSection from './components/PricingSection.vue'
 import Footer from './components/Footer.vue'
 
 const videoInfo = ref(null)
@@ -50,16 +47,29 @@ const downloading = ref(false)
 const downloadProgress = ref(0)
 const downloadStatus = ref('')
 const selectedFormat = ref({ quality: '1080p', size: '~500MB' })
+const videoInfoSectionRef = ref(null)
 const options = reactive({
   onlyAudio: false,
   subtitle: false,
   currentUrl: ''
 })
 
+function scrollToVideoInfoSection() {
+  const sectionEl = videoInfoSectionRef.value
+  if (!sectionEl) return
+  const sectionTop = sectionEl.getBoundingClientRect().top + window.scrollY
+  const offset = Math.min(220, Math.round(window.innerHeight * 0.25))
+  const targetTop = Math.max(0, sectionTop - offset)
+  window.scrollTo({ top: targetTop, behavior: 'smooth' })
+}
+
 function onVideoInfo(info) {
   videoInfo.value = info
   selectedFormat.value = info.formats.find(f => f.quality === '1080p') || info.formats[0]
   options.currentUrl = info.url || ''
+  nextTick(() => {
+    scrollToVideoInfoSection()
+  })
 }
 
 function onSelectFormat(format) {

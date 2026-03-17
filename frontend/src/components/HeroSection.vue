@@ -24,7 +24,6 @@
         随时随地，想下就下
       </p>
 
-      <!-- URL 输入区域 -->
       <div class="max-w-3xl mx-auto mb-6">
         <div class="flex items-center bg-white rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50 overflow-hidden">
           <div class="flex items-center gap-3 pl-5 py-1">
@@ -54,24 +53,38 @@
             {{ loading ? '解析中...' : '解析视频' }}
           </button>
         </div>
-
-        <!-- 错误提示 -->
-        <div v-if="error" class="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{{ error }}</span>
-          </div>
-        </div>
       </div>
-
-      <!-- 快捷标签 -->
       <div class="flex items-center justify-center gap-3 text-sm">
         <span class="text-slate-400">试试：</span>
         <button v-for="platform in quickPlatforms" :key="platform" @click="setExampleUrl(platform)" class="px-3 py-1.5 rounded-full border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all">
           {{ platform }}
         </button>
+      </div>
+    </div>
+    <div v-if="error" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4" @click.self="closeErrorModal">
+      <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 class="text-base font-semibold text-slate-800">解析失败</h3>
+          <button
+            @click="closeErrorModal"
+            class="text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="px-5 py-5">
+          <p class="text-slate-600 leading-relaxed">{{ error }}</p>
+        </div>
+        <div class="px-5 pb-5 flex justify-end">
+          <button
+            @click="closeErrorModal"
+            class="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors"
+          >
+            我知道了
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -83,7 +96,7 @@ import axios from 'axios'
 
 const emit = defineEmits(['video-info'])
 
-const url = ref('https://www.bilibili.com/video/BV1mAAmqEfP')
+const url = ref('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 const loading = ref(false)
 const error = ref('')
 
@@ -99,20 +112,52 @@ function setExampleUrl(platform) {
   error.value = ''
 }
 
+function closeErrorModal() {
+  error.value = ''
+}
+
+function formatErrorMessage(rawError) {
+  const message = String(rawError || '')
+    .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+    .replace(/^ERROR:\s*/i, '')
+    .replace(/\s*\(caused by <[^>]+>\)\s*$/i, '')
+    .trim()
+  if (!message) return '解析视频失败，请检查链接是否正确'
+  if (message.includes('Unable to download webpage') && message.includes('HTTP Error 404')) {
+    return '链接不存在或已失效，请检查视频地址后重试'
+  }
+  if (/invalid url|not a valid url|\[generic\]/i.test(message)) {
+    return '地址无效，请输入正确的视频链接'
+  }
+  return message
+}
+
+function normalizeInputUrl(rawValue) {
+  const text = String(rawValue || '').trim()
+  if (!text) return ''
+  const matched = text.match(/https?:\/\/[^\s<>"'`]+/i)
+  const candidate = matched ? matched[0] : text
+  return candidate.replace(/[)\]}>，。！？、；：'"`]+$/g, '')
+}
+
 async function fetchVideoInfo() {
-  if (!url.value) return
+  const normalizedUrl = normalizeInputUrl(url.value)
+  if (!normalizedUrl || !/^https?:\/\//i.test(normalizedUrl)) {
+    error.value = '地址无效，请输入正确的视频链接'
+    return
+  }
 
   loading.value = true
   error.value = ''
 
   try {
+    url.value = normalizedUrl
     const response = await axios.post('http://localhost:8000/api/video/info', {
-      url: url.value
+      url: normalizedUrl
     })
     emit('video-info', response.data)
   } catch (err) {
-    console.error('Failed to fetch video info:', err)
-    error.value = err.response?.data?.detail || '解析视频失败，请检查链接是否正确'
+    error.value = formatErrorMessage(err.response?.data?.detail)
   } finally {
     loading.value = false
   }

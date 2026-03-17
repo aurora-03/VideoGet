@@ -9,6 +9,7 @@
               <img
                 :src="videoInfo.thumbnail"
                 :alt="videoInfo.title"
+                referrerpolicy="no-referrer"
                 class="w-full h-full object-cover"
               />
               <div class="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/80 text-white text-sm">
@@ -100,7 +101,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
 const props = defineProps({
   videoInfo: Object,
@@ -109,11 +110,22 @@ const props = defineProps({
   downloadStatus: String
 })
 
-defineEmits(['select-format', 'update-options', 'start-download'])
+const emit = defineEmits(['select-format', 'update-options', 'start-download'])
 
 const selectedFormat = ref({ quality: '1080p', size: '~500MB' })
 const options = reactive({
   onlyAudio: false,
   subtitle: false
 })
+
+watch(
+  () => props.videoInfo,
+  (info) => {
+    const formats = info?.formats || []
+    if (!formats.length) return
+    selectedFormat.value = formats.find(f => f.quality === '1080p') || formats[0]
+    emit('select-format', selectedFormat.value)
+  },
+  { immediate: true }
+)
 </script>
