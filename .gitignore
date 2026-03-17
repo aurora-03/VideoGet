@@ -63,3 +63,13 @@ website_info.json
 
 # Design images
 fronted.png
+
+# Log files
+*.log
+backend/logs/
+
+# Test files
+backend/test_*.py
+
+# Third party
+backend/third_party/
