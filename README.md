@@ -1,3 +1,5 @@
+
+
 # VideoGet - 万能视频下载器
 
 一个现代化的视频下载网站，支持 1000+ 平台，提供 4K 高清下载、AI 视频总结、字幕翻译等功能。
@@ -149,6 +151,7 @@ video-get/
 | 端点 | 方法 | 说明 |
 |------|------|------|
 | `/api/video/info` | POST | 获取视频信息 |
+| `/api/video/thumbnail` | GET | 获取视频封面图（代理） |
 | `/api/download` | POST | 开始下载任务 |
 | `/api/task/{task_id}` | GET | 获取任务状态 |
 | `/api/download/file/{filename}` | GET | 下载已完成的文件 |
