@@ -4,45 +4,45 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
         <!-- 产品 -->
         <div>
-          <h4 class="text-slate-800 font-semibold mb-4">产品</h4>
+          <h4 class="text-slate-800 font-semibold mb-4">{{ t('产品') }}</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">功能特性</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">支持平台</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">套餐价格</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">更新日志</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('功能特性') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('支持平台') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('套餐价格') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('更新日志') }}</a></li>
           </ul>
         </div>
 
         <!-- 资源 -->
         <div>
-          <h4 class="text-slate-800 font-semibold mb-4">资源</h4>
+          <h4 class="text-slate-800 font-semibold mb-4">{{ t('资源') }}</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">帮助中心</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">使用教程</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">常见问题</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">API 文档</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('帮助中心') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('使用教程') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('常见问题') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('API 文档') }}</a></li>
           </ul>
         </div>
 
         <!-- 公司 -->
         <div>
-          <h4 class="text-slate-800 font-semibold mb-4">公司</h4>
+          <h4 class="text-slate-800 font-semibold mb-4">{{ t('公司') }}</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">关于我们</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">加入我们</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">合作伙伴</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">联系我们</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('关于我们') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('加入我们') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('合作伙伴') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('联系我们') }}</a></li>
           </ul>
         </div>
 
         <!-- 法律 -->
         <div>
-          <h4 class="text-slate-800 font-semibold mb-4">法律</h4>
+          <h4 class="text-slate-800 font-semibold mb-4">{{ t('法律') }}</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">服务条款</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">隐私政策</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">版权声明</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">免责声明</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('服务条款') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('隐私政策') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('版权声明') }}</a></li>
+            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('免责声明') }}</a></li>
           </ul>
         </div>
       </div>
@@ -59,7 +59,7 @@
           <span class="font-bold text-slate-800">SaveAny</span>
         </div>
         <p class="text-slate-500 text-sm text-center">
-          © 2024 SaveAny. 保留所有权利。
+          {{ t('© 2024 SaveAny. 保留所有权利。') }}
         </p>
       </div>
     </div>
@@ -67,4 +67,5 @@
 </template>
 
 <script setup>
+import { t } from '../i18n.js'
 </script>

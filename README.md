@@ -8,11 +8,11 @@ VideoGet is an early MVP. The download workflow uses real backend APIs; some fea
 
 ## Screenshots
 
-The current interface is in Chinese and uses the SaveAny branding. These captures show the running frontend and a real Bilibili video parsed by the backend.
+These captures show the actual English interface, using the SaveAny branding, and a real YouTube video parsed by the backend. Open [the English interface](http://localhost:3000/?lang=en) with `?lang=en`; `?lang=zh-CN` selects Chinese.
 
 <p>
-  <img src="docs/images/frontend-home.jpg" alt="VideoGet homepage with video URL input" width="350" />
-  <img src="docs/images/frontend-video-info.jpg" alt="Parsed video with quality, MP3 and subtitle options" width="350" />
+  <img src="docs/images/frontend-home.en.jpg" alt="English VideoGet homepage with video URL input" width="800" />
+  <img src="docs/images/frontend-video-info.en.jpg" alt="English video details with quality, MP3 and subtitle options" width="800" />
 </p>
 
 ## Feature mind map

@@ -35,13 +35,13 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
-                {{ videoInfo.views }}
+                {{ formatViews(videoInfo.views) }}
               </span>
             </div>
 
             <!-- 格式选择 -->
             <div class="mb-4">
-              <label class="block text-slate-700 font-medium mb-3">选择画质</label>
+              <label class="block text-slate-700 font-medium mb-3">{{ t('选择画质') }}</label>
               <div class="flex flex-wrap gap-2">
                 <button
                   v-for="format in videoInfo.formats"
@@ -54,8 +54,8 @@
                       : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600'
                   ]"
                 >
-                  <div class="font-semibold">{{ format.label || format.quality }}</div>
-                  <div class="text-xs opacity-70">{{ format.size }}</div>
+                  <div class="font-semibold">{{ t(format.label || format.quality) }}</div>
+                  <div class="text-xs opacity-70">{{ t(format.size) }}</div>
                 </button>
               </div>
             </div>
@@ -64,11 +64,11 @@
             <div class="flex flex-wrap gap-4 mb-6">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" v-model="options.onlyAudio" @change="$emit('update-options', options)" class="w-4 h-4 rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500" />
-                <span class="text-slate-600 text-sm">仅下载音频 (MP3)</span>
+                <span class="text-slate-600 text-sm">{{ t('仅下载音频 (MP3)') }}</span>
               </label>
               <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" v-model="options.subtitle" @change="$emit('update-options', options)" class="w-4 h-4 rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500" />
-                <span class="text-slate-600 text-sm">下载字幕</span>
+                <span class="text-slate-600 text-sm">{{ t('下载字幕') }}</span>
               </label>
             </div>
 
@@ -82,7 +82,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                {{ downloading ? `下载中 ${downloadProgress}%` : '开始下载' }}
+                {{ downloading ? t('下载中 {progress}%', { progress: downloadProgress }) : t('开始下载') }}
               </button>
             </div>
 
@@ -91,7 +91,7 @@
               <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div class="h-full bg-blue-500 rounded-full transition-all duration-300" :style="{ width: downloadProgress + '%' }"></div>
               </div>
-              <p class="text-slate-500 text-sm mt-2 text-center">{{ downloadStatus }}</p>
+              <p class="text-slate-500 text-sm mt-2 text-center">{{ t(downloadStatus) }}</p>
             </div>
           </div>
         </div>
@@ -102,6 +102,7 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
+import { t, formatViews } from '../i18n.js'
 
 const props = defineProps({
   videoInfo: Object,
