@@ -10,7 +10,7 @@ VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API�
 
 当前界面为中文，使用 SaveAny 品牌名称。以下截图来自实际运行的前端，以及后端成功解析的 Bilibili 视频。
 
-通过 `?lang=zh-CN` 访问中文界面，通过 `?lang=en` 访问英文界面；英文 README 使用英文界面的独立截图。
+前端默认显示英文；通过 `?lang=zh-CN` 访问中文界面，通过 `?lang=en` 显式选择英文。英文 README 使用英文界面的独立截图。
 
 <p>
   <img src="docs/images/frontend-home.jpg" alt="VideoGet 首页与视频链接输入框" width="350" />
@@ -132,6 +132,8 @@ docker compose up --build -d
 | `YTDLP_VIDEO_PASSWORD` | 未设置 | 密码保护视频的已知密码 |
 | `CLOUD_BASE_URL` | 示例中为 `https://api.openai.com/v1` | 三个功能共用的云端 API 地址 |
 | `CLOUD_API_KEY` | 未设置 | 共用的服务端云端密钥 |
+| `CLOUD_PROTOCOL` | `openai` | `openai` Chat Completions 或 `anthropic` Messages 协议 |
+| `AI_MAX_OUTPUT_TOKENS` | `16384` | 输出 Token 上限（适用时包含推理内容），可在模型设置中调整 |
 | `CLOUD_ASR_MODEL` | 示例中为 `whisper-1` | 云端语音转写模型 |
 | `CLOUD_TRANSLATION_MODEL` | 示例中为 `gpt-4o-mini` | 云端字幕翻译模型 |
 | `CLOUD_SUMMARY_MODEL` | 示例中为 `gpt-4o-mini` | 云端总结模型 |
@@ -150,6 +152,12 @@ docker compose up --build -d
 Cookie 文件需要后端可读。Docker 中须使用容器内的路径，并以只读卷挂载文件。请勿将 Cookie 文件或密码提交到 Git。
 
 ## 字幕、语音转文字与 AI
+
+在首页展开“模型设置”，即可填写服务地址、OpenAI / Anthropic 协议、API Key、翻译模型、总结模型、输出 Token 上限及云端 / 本地语音参数。点击“保存模型配置”后，当前浏览器后续任务立即使用新配置，无需编辑 `.env` 或重启后端。
+
+前端提交的配置在服务端内存中保存最多两小时，通过 HttpOnly、SameSite Cookie 隔离不同浏览器会话。设置接口不回传密钥，应用也不把密钥写入浏览器 localStorage / sessionStorage。同一服务密钥留空可保留；更换服务地址或协议时需重新填写。独立语音地址与共享地址不同时，需要单独填写语音密钥。后端重启会使会话失效，正在运行的任务仍使用启动时的配置快照。`.env` 继续作为部署默认配置，前端保存不会修改该文件。
+
+部署时，前端与后端应位于同一站点（例如通过 `/api` 反向代理）；完全不同站点之间无法共享严格的会话 Cookie。
 
 解析视频后，可以使用“字幕与 AI 助手”面板：
 
@@ -174,6 +182,8 @@ CLOUD_SUMMARY_MODEL=你的总结模型名
 将示例地址和模型名替换为服务商的真实值，实际密钥只填在本地 `.env` 文件中。服务需要支持 `/chat/completions` 和 `/audio/transcriptions`；语音模型需要支持带时间段的 `verbose_json` 响应。如果文本服务不支持语音，可通过 `ASR_BASE_URL`、`ASR_API_KEY` 和 `ASR_MODEL` 单独接入另一家语音服务。
 
 文本服务也可通过 `AI_BASE_URL` / `AI_API_KEY` 单独覆盖，留空时继承共享配置。`AI_PROVIDER=custom` 时，缺少地址或模型名不会自动回退到 OpenAI，也不会将环境中其他 `OPENAI_API_KEY` 转发给自定义服务。`openai` 模式保留 OpenAI 默认地址、默认模型和旧环境变量兼容。
+
+接入 Anthropic 兼容服务时，设置 `CLOUD_PROTOCOL=anthropic`，并填入服务商给出的 Base URL（例如以 `/apps/anthropic` 结尾的地址）。文本调用使用 `/v1/messages` 和 `x-api-key`，只展示响应中的文本块，不展示思考块。此文本入口不能直接当作 `/audio/transcriptions` 使用；语音需配置独立服务或选择本地 Whisper。协议说明见[阿里云 Messages 文档](https://help.aliyun.com/zh/model-studio/anthropic-api-messages)。
 
 修改配置后，请重启后端并刷新页面。语音、翻译和总结的配置就绪状态会分别显示；密钥不会发送到前端，也不会提交到 Git。
 
@@ -206,6 +216,8 @@ docker compose up -d
 | `GET` | `/api/video/thumbnail?url=...` | 代理获取封面图片 |
 | `POST` | `/api/download` | 创建后台下载任务 |
 | `GET` | `/api/ai/capabilities` | 返回文本和语音服务配置状态，不包含密钥 |
+| `GET` | `/api/ai/settings` | 返回当前浏览器会话参数及密钥是否存在，不返回密钥值 |
+| `POST` | `/api/ai/settings` | 保存当前浏览器的模型参数，不修改全局环境配置 |
 | `POST` | `/api/video/analyze` | 启动字幕提取、语音转写、字幕翻译或总结任务 |
 | `GET` | `/api/task/{task_id}` | 获取任务状态、进度和完成后的文件地址 |
 | `GET` | `/api/download/file/{filename}` | 获取已下载的文件 |

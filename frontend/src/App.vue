@@ -3,7 +3,8 @@
     <!-- 主容器 -->
     <div class="relative z-10">
       <!-- 导航栏 -->
-      <NavBar />
+      <NavBar :settings-open="settingsOpen" @open-settings="settingsOpen = true" />
+      <ModelSettings v-model:open="settingsOpen" @updated="modelSettingsVersion++" />
 
       <!-- 主要内容 -->
       <main>
@@ -23,7 +24,7 @@
             @update-options="onUpdateOptions"
             @start-download="onStartDownload"
           />
-          <VideoAnalysis :url="options.currentUrl" />
+          <VideoAnalysis :url="options.currentUrl" :settings-version="modelSettingsVersion" />
         </div>
 
         <!-- 功能特性 -->
@@ -43,10 +44,13 @@ import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
 import VideoInfoSection from './components/VideoInfoSection.vue'
 import VideoAnalysis from './components/VideoAnalysis.vue'
+import ModelSettings from './components/ModelSettings.vue'
 import FeaturesSection from './components/FeaturesSection.vue'
 import Footer from './components/Footer.vue'
 
 const videoInfo = ref(null)
+const settingsOpen = ref(false)
+const modelSettingsVersion = ref(0)
 const downloading = ref(false)
 const downloadProgress = ref(0)
 const downloadStatus = ref('')

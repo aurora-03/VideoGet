@@ -53,7 +53,8 @@ class SubtitleTests(unittest.TestCase):
 class ProviderTests(unittest.TestCase):
     def setUp(self):
         self.environment = patch.dict(os.environ, {'AI_PROVIDER': 'openai', 'AI_API_KEY': '',
-            'OPENAI_API_KEY': '', 'ASR_API_KEY': '', 'ASR_BACKEND': 'api', 'AI_MODEL': 'test-model'})
+            'OPENAI_API_KEY': '', 'ASR_API_KEY': '', 'ASR_BACKEND': 'api', 'AI_MODEL': 'test-model',
+            'CLOUD_API_KEY': '', 'CLOUD_PROTOCOL': 'openai'})
         self.environment.start()
 
     def tearDown(self):
@@ -178,6 +179,35 @@ class ProviderTests(unittest.TestCase):
             self.assertEqual(AIClient().model_for('translate'), 'local-text')
             self.assertEqual(SpeechClient().model, 'base')
 
+    def test_anthropic_protocol_uses_messages_and_ignores_thinking_blocks(self):
+        response = Mock(status_code=200)
+        response.json.return_value = {'stop_reason': 'end_turn', 'content': [
+            {'type': 'thinking', 'thinking': 'private reasoning'}, {'type': 'text', 'text': '{"cues":[]}'},
+        ]}
+        with patch.dict(os.environ, {'CLOUD_PROTOCOL': 'anthropic', 'AI_API_KEY': 'test-key',
+            'AI_BASE_URL': 'https://cloud.example.test/apps/anthropic'}), \
+             patch('services.ai_client.requests.post', return_value=response) as post:
+            text = AIClient().chat('Return JSON', {}, json_output=True)
+            self.assertEqual(text, '{"cues":[]}')
+            self.assertEqual(post.call_args.args[0], 'https://cloud.example.test/apps/anthropic/v1/messages')
+            self.assertEqual(post.call_args.kwargs['headers']['x-api-key'], 'test-key')
+            self.assertNotIn('response_format', post.call_args.kwargs['json'])
+            self.assertEqual(post.call_args.kwargs['json']['messages'][0]['role'], 'user')
+            self.assertIn('JSON', post.call_args.kwargs['json']['system'])
+
+    def test_anthropic_truncation_is_not_a_successful_summary(self):
+        response = Mock(status_code=200)
+        response.json.return_value = {'stop_reason': 'max_tokens', 'content': [{'type': 'text', 'text': 'partial'}]}
+        with patch.dict(os.environ, {'CLOUD_PROTOCOL': 'anthropic', 'AI_API_KEY': 'test-key'}), \
+             patch('services.ai_client.requests.post', return_value=response):
+            with self.assertRaisesRegex(ValueError, '截断'):
+                AIClient().chat('Summarize', {})
+
+    def test_anthropic_text_address_is_not_used_for_speech_uploads(self):
+        with patch.dict(os.environ, {'CLOUD_PROTOCOL': 'anthropic', 'ASR_BASE_URL': ''}):
+            with self.assertRaisesRegex(ConfigurationError, '单独配置语音'):
+                SpeechClient().require()
+
 
 class AnalysisTests(unittest.TestCase):
     def setUp(self):
@@ -291,7 +321,8 @@ class AnalysisAPITests(unittest.TestCase):
         from fastapi.testclient import TestClient
         self.directory = tempfile.TemporaryDirectory()
         self.env = patch.dict(os.environ, {'DOWNLOAD_DIR': self.directory.name, 'AI_PROVIDER': 'openai',
-            'AI_API_KEY': 'test-key', 'ASR_API_KEY': '', 'ASR_BACKEND': 'api'})
+            'AI_API_KEY': 'test-key', 'ASR_API_KEY': '', 'ASR_BACKEND': 'api',
+            'CLOUD_API_KEY': '', 'CLOUD_PROTOCOL': 'openai'})
         self.env.start()
         self.path = patch.object(routes.downloader, 'download_dir', Path(self.directory.name))
         self.path.start()

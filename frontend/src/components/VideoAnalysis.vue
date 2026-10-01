@@ -76,7 +76,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { api, fileUrl } from '../api.js'
 import { locale, t } from '../i18n.js'
 
-const props = defineProps({ url: { type: String, required: true } })
+const props = defineProps({ url: { type: String, required: true }, settingsVersion: { type: Number, default: 0 } })
 const languages = [{ code: 'zh', label: '简体中文' }, { code: 'en', label: '英语' },
   { code: 'ja', label: '日语' }, { code: 'ko', label: '韩语' }, { code: 'es', label: '西班牙语' },
   { code: 'fr', label: '法语' }, { code: 'de', label: '德语' }]
@@ -114,10 +114,15 @@ watch(() => props.url, () => {
 })
 watch(sourceLanguage, () => { sourceTaskId.value = null })
 onUnmounted(stop)
-onMounted(async () => {
+async function refreshCapabilities() {
   try { capabilities.value = (await api.get('/ai/capabilities')).data }
-  catch { error.value = '无法连接后端，请确认服务已启动' }
-})
+  catch {
+    capabilities.value = { text_ready: false, translation_ready: false, summary_ready: false, speech_ready: false }
+    error.value = '模型配置会话已过期，请刷新页面重新配置'
+  }
+}
+onMounted(refreshCapabilities)
+watch(() => props.settingsVersion, refreshCapabilities)
 
 function time(seconds) {
   return new Date(Math.floor(seconds) * 1000).toISOString().slice(11, 19)

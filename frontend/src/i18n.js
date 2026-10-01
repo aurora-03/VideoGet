@@ -1,7 +1,8 @@
 // URL-selected UI language; video titles and authors retain their source language.
-export const locale = new URLSearchParams(window.location.search).get('lang') === 'en' ? 'en' : 'zh-CN'
+export const locale = new URLSearchParams(window.location.search).get('lang') === 'zh-CN' ? 'zh-CN' : 'en'
 
 const english = {
+  '关闭': 'Close',
   '万能视频下载': 'Video downloader',
   '功能特性': 'Features',
   '支持平台': 'Supported platforms',
@@ -142,6 +143,42 @@ const english = {
   '请配置有效的云端服务地址 CLOUD_BASE_URL（例如 https://服务地址/v1）': 'Configure a valid cloud API base URL on the server, such as https://your-service/v1.',
   '字幕翻译模型未配置，翻译暂不可用。': 'Subtitle translation is not configured and is currently unavailable.',
   '总结模型未配置，总结暂不可用。': 'The summary model is not configured and is currently unavailable.',
+  '当前 Anthropic 服务仅配置文本模型，请单独配置语音服务或使用本地 Whisper': 'This Anthropic service is configured for text only. Configure a separate speech service or use local Whisper.',
+  'CLOUD_PROTOCOL 必须为 openai 或 anthropic': 'CLOUD_PROTOCOL must be openai or anthropic.',
+  'AI 服务响应格式与 Anthropic Messages 不兼容': 'The AI service response is not compatible with Anthropic Messages.',
+  '模型设置': 'Model settings',
+  '配置当前浏览器使用的模型服务，保存后立即生效。': 'Configure model services for this browser session. Changes take effect immediately.',
+  '文本服务': 'Text service',
+  '自定义云端': 'Custom cloud service',
+  '本地 Ollama': 'Local Ollama',
+  '接口协议': 'API protocol',
+  '云端 / 本地服务地址': 'Cloud / local service URL',
+  '已配置，留空保留': 'Configured. Leave blank to keep the saved key.',
+  '输入 API Key': 'Enter API key',
+  '更换服务地址或协议后，需重新填写密钥。': 'Enter a new key when changing the service address or protocol.',
+  '清除已保存密钥': 'Clear saved key',
+  '字幕翻译模型': 'Subtitle translation model',
+  'AI 总结模型': 'AI summary model',
+  '输出 Token 上限': 'Output token limit',
+  '语音转文字模式': 'Speech recognition mode',
+  '云端语音服务': 'Cloud speech service',
+  '本地 Whisper': 'Local Whisper',
+  '语音模型': 'Speech model',
+  '独立语音服务地址（可选）': 'Separate speech service URL (optional)',
+  '独立语音 API Key（可选）': 'Separate speech API key (optional)',
+  '清除语音密钥': 'Clear speech key',
+  '与共享地址一致时可复用共享密钥': 'Reuse the shared key only when service addresses match.',
+  'Anthropic 文本入口需要另配语音服务，或选择本地 Whisper。': 'Anthropic text services need a separate speech service or local Whisper.',
+  '密钥仅保存在服务端当前会话，不回显、不写入浏览器存储；会话两小时后或后端重启后失效。': 'Keys stay in server-side session memory and are never returned or stored in the browser. Sessions expire after two hours or a backend restart.',
+  '正在保存...': 'Saving…',
+  '保存模型配置': 'Save model settings',
+  '配置已生效': 'Settings applied',
+  '模型配置加载失败，请刷新页面': 'Could not load model settings. Please reload the page.',
+  '模型配置保存失败，请重试': 'Could not save model settings. Please try again.',
+  '模型配置会话已过期，请刷新页面重新配置': 'Your model settings session expired. Reload the page and configure it again.',
+  '模型配置参数无效，请检查地址、模型和 Token 上限': 'Invalid settings. Check the addresses, models and output token limit.',
+  '不允许从此页面保存模型配置': 'This page is not allowed to save model settings.',
+  'API Key 长度无效': 'Invalid API key length.',
 }
 
 export function t(text, values = {}) {

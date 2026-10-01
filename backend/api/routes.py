@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.responses import FileResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr, ValidationError
 from typing import Optional, List, Dict, Any, Literal
 import os
 import uuid
@@ -13,6 +13,8 @@ from services.downloader import VideoDownloader
 from services.task_manager import TaskManager
 from services.video_analysis import VideoAnalysis
 from services.ai_client import AIClient, SpeechClient, ConfigurationError, capabilities
+from services.ai_client import require_address
+from services.model_settings import COOKIE, LIFETIME, store as model_store, initial_profile, public_profile, use_settings
 
 router = APIRouter()
 
@@ -101,13 +103,104 @@ class AnalysisRequest(BaseModel):
     allow_transcription: bool = False
 
 
+class ModelConfigRequest(BaseModel):
+    model_config = {'extra': 'forbid'}
+    provider: Literal['openai', 'custom', 'ollama'] = 'custom'
+    protocol: Literal['openai', 'anthropic'] = 'openai'
+    base_url: str = Field(default='', max_length=2048)
+    api_key: Optional[SecretStr] = None
+    clear_api_key: bool = False
+    translation_model: str = Field(default='', max_length=200)
+    summary_model: str = Field(default='', max_length=200)
+    max_output_tokens: int = Field(default=16384, ge=256, le=32768)
+    asr_backend: Literal['api', 'local'] = 'api'
+    asr_base_url: str = Field(default='', max_length=2048)
+    asr_api_key: Optional[SecretStr] = None
+    clear_asr_api_key: bool = False
+    asr_model: str = Field(default='', max_length=200)
+
+
+def session_profile(request):
+    token = request.cookies.get(COOKIE)
+    profile = model_store.get(token) if token else None
+    if (token or request.headers.get('x-model-session') == 'required') and profile is None:
+        raise HTTPException(status_code=409, detail='模型配置会话已过期，请刷新页面重新配置')
+    return profile
+
+
+def set_model_cookie(response, request, token):
+    response.set_cookie(COOKIE, token, max_age=LIFETIME, httponly=True,
+                        secure=request.url.scheme == 'https', samesite='strict', path='/api')
+    response.headers['Cache-Control'] = 'no-store'
+
+
+@router.get('/ai/settings')
+async def get_model_settings(request: Request, response: Response):
+    token = request.cookies.get(COOKIE)
+    profile = model_store.get(token) if token else None
+    if profile is None:
+        profile = initial_profile()
+        token = model_store.save(None, profile)
+    set_model_cookie(response, request, token)
+    return public_profile(profile)
+
+
+@router.post('/ai/settings')
+async def save_model_settings(request: Request, response: Response):
+    origin = request.headers.get('origin')
+    allowed = {value.strip() for value in os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')}
+    allowed.add(str(request.base_url).rstrip('/'))
+    if origin and origin not in allowed:
+        raise HTTPException(status_code=403, detail='不允许从此页面保存模型配置')
+    try:
+        payload = ModelConfigRequest.model_validate(await request.json())
+    except (ValidationError, ValueError):
+        raise HTTPException(status_code=422, detail='模型配置参数无效，请检查地址、模型和 Token 上限')
+    old = session_profile(request) or initial_profile()
+    base_url, asr_base_url = payload.base_url.strip().rstrip('/'), payload.asr_base_url.strip().rstrip('/')
+    try:
+        if base_url:
+            require_address(base_url)
+        if asr_base_url:
+            require_address(asr_base_url)
+    except ConfigurationError as error:
+        raise HTTPException(status_code=400, detail=str(error))
+    same_service = base_url == old['CLOUD_BASE_URL'].rstrip('/') and payload.protocol == old['CLOUD_PROTOCOL'] and payload.provider == old['AI_PROVIDER']
+    entered_key = payload.api_key.get_secret_value().strip() if payload.api_key else ''
+    key = entered_key or (old['CLOUD_API_KEY'] if same_service else '')
+    if payload.clear_api_key or payload.provider == 'ollama':
+        key = ''
+    entered_asr_key = payload.asr_api_key.get_secret_value().strip() if payload.asr_api_key else ''
+    same_asr_service = (asr_base_url or base_url) == (old['ASR_BASE_URL'].rstrip('/') or old['CLOUD_BASE_URL'].rstrip('/'))
+    asr_key = entered_asr_key or (old['ASR_API_KEY'] if same_asr_service else '')
+    if payload.clear_asr_api_key:
+        asr_key = ''
+    if len(key) > 8192 or len(asr_key) > 8192:
+        raise HTTPException(status_code=400, detail='API Key 长度无效')
+    profile = {**old, 'AI_PROVIDER': payload.provider, 'CLOUD_PROTOCOL': payload.protocol,
+        'CLOUD_BASE_URL': base_url, 'CLOUD_API_KEY': key,
+        'CLOUD_TRANSLATION_MODEL': payload.translation_model.strip(),
+        'CLOUD_SUMMARY_MODEL': payload.summary_model.strip(),
+        'AI_BASE_URL': base_url if payload.provider == 'ollama' else '',
+        'AI_API_KEY': '', 'AI_MODEL': payload.summary_model.strip() if payload.provider == 'ollama' else '',
+        'OPENAI_API_KEY': '', 'OPENAI_BASE_URL': '',
+        'AI_MAX_OUTPUT_TOKENS': str(payload.max_output_tokens), 'ASR_BACKEND': payload.asr_backend,
+        'ASR_BASE_URL': asr_base_url, 'ASR_API_KEY': asr_key, 'ASR_MODEL': payload.asr_model.strip(), 'CLOUD_ASR_MODEL': ''}
+    token = model_store.save(request.cookies.get(COOKIE), profile)
+    set_model_cookie(response, request, token)
+    with use_settings(profile):
+        state = capabilities()
+    return {'settings': public_profile(profile), 'capabilities': state}
+
+
 @router.get('/ai/capabilities')
-async def get_ai_capabilities():
-    return capabilities()
+async def get_ai_capabilities(request: Request):
+    with use_settings(session_profile(request)):
+        return capabilities()
 
 
 @router.post('/video/analyze')
-async def start_analysis(payload: AnalysisRequest, background_tasks: BackgroundTasks):
+async def start_analysis(payload: AnalysisRequest, background_tasks: BackgroundTasks, request: Request):
     url = _extract_input_url(payload.url)
     if not re.match(r'^https?://', url, flags=re.IGNORECASE):
         raise HTTPException(status_code=400, detail='地址无效，请输入正确的视频链接')
@@ -117,10 +210,12 @@ async def start_analysis(payload: AnalysisRequest, background_tasks: BackgroundT
         if not source or source.get('url') != url or not (source.get('result') or {}).get('segments'):
             raise HTTPException(status_code=400, detail='已有文本任务不可用，请重新提取字幕')
     try:
-        if payload.mode in {'translate', 'summarize'}:
-            AIClient().require_text(payload.mode)
-        if payload.mode == 'transcribe':
-            SpeechClient().require()
+        profile = session_profile(request)
+        with use_settings(profile):
+            if payload.mode in {'translate', 'summarize'}:
+                AIClient().require_text(payload.mode)
+            if payload.mode == 'transcribe':
+                SpeechClient().require()
     except ConfigurationError as error:
         raise HTTPException(status_code=503, detail=str(error))
     if not video_analysis.slots.acquire(blocking=False):
@@ -128,7 +223,7 @@ async def start_analysis(payload: AnalysisRequest, background_tasks: BackgroundT
     task_id = str(uuid.uuid4())
     task_manager.create_task(task_id, url)
     background_tasks.add_task(video_analysis.run, task_id, url, payload.mode, payload.source_language,
-                              payload.target_language, source_id, payload.allow_transcription)
+                              payload.target_language, source_id, payload.allow_transcription, profile)
     return {'task_id': task_id, 'status': 'started'}
 
 
