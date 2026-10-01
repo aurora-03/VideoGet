@@ -4,16 +4,18 @@
 
 基于 Vue 3、FastAPI、yt-dlp 和 FFmpeg 的网页视频下载器。粘贴视频链接，查看可用画质，下载视频或提取 MP3 音频。
 
+前端默认英文，保留原始蓝色 SaveAny 布局。通过右上角“模型设置”配置模型服务，输出 Token 默认上限为 **16384**，界面允许调整至 32768，具体需符合服务商支持的范围。
+
 VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API，原始项目文档中的部分功能仍处于规划阶段。
 
 ## 页面截图
 
-当前界面为中文，使用 SaveAny 品牌名称。以下截图来自实际运行的前端，以及后端成功解析的 Bilibili 视频。
+首页截图展示当前中文界面和右上角模型设置入口；视频详情截图来自后端成功解析的 Bilibili 视频。界面保留 SaveAny 品牌名称。
 
 前端默认显示英文；通过 `?lang=zh-CN` 访问中文界面，通过 `?lang=en` 显式选择英文。英文 README 使用英文界面的独立截图。
 
 <p>
-  <img src="docs/images/frontend-home.jpg" alt="VideoGet 首页与视频链接输入框" width="350" />
+  <img src="docs/images/frontend-home.jpg" alt="VideoGet 中文首页、视频链接输入框及右上角模型设置" width="800" />
   <img src="docs/images/frontend-video-info.jpg" alt="视频解析结果、画质选择、MP3 和字幕选项" width="350" />
 </p>
 
@@ -34,6 +36,7 @@ VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API�
 - 通过进度条查看后台下载任务。
 - 提取已有字幕，或通过云端 / 本地 Whisper 将语音转为文字，支持 SRT 和 TXT 下载。
 - 配置模型服务后，可翻译带时间轴的字幕，并生成基于文字的 AI 总结。
+- 可在前端配置 OpenAI / Anthropic 兼容服务或本地 Ollama；语音可单独接入云端服务，也可使用本地 Whisper。
 - 使用内置适配器解析抖音和快手的公开移动分享页。
 - 可配置服务端 Cookie 和已知视频密码，访问已有授权的内容。
 - 响应式 Vue 界面及 Docker Compose 配置。
@@ -153,7 +156,9 @@ Cookie 文件需要后端可读。Docker 中须使用容器内的路径，并以
 
 ## 字幕、语音转文字与 AI
 
-在首页展开“模型设置”，即可填写服务地址、OpenAI / Anthropic 协议、API Key、翻译模型、总结模型、输出 Token 上限及云端 / 本地语音参数。点击“保存模型配置”后，当前浏览器后续任务立即使用新配置，无需编辑 `.env` 或重启后端。
+点击右上角导航栏的“模型设置”，即可填写服务地址、OpenAI / Anthropic 协议、API Key、翻译模型、总结模型、输出 Token 上限及云端 / 本地语音参数。点击“保存模型配置”后，当前浏览器后续任务立即使用新配置，无需编辑 `.env` 或重启后端。
+
+新会话的输出 Token 默认上限为 **16384**，部署配置可以覆盖此默认值。推理模型可能先消耗 Token 生成思考内容，再输出正文。上限不是要求生成的总结长度，也不保证所有输入都能完整处理；可在模型设置中调整，数值需符合服务商限制。
 
 前端提交的配置在服务端内存中保存最多两小时，通过 HttpOnly、SameSite Cookie 隔离不同浏览器会话。设置接口不回传密钥，应用也不把密钥写入浏览器 localStorage / sessionStorage。同一服务密钥留空可保留；更换服务地址或协议时需重新填写。独立语音地址与共享地址不同时，需要单独填写语音密钥。后端重启会使会话失效，正在运行的任务仍使用启动时的配置快照。`.env` 继续作为部署默认配置，前端保存不会修改该文件。
 
@@ -179,13 +184,13 @@ CLOUD_TRANSLATION_MODEL=你的翻译模型名
 CLOUD_SUMMARY_MODEL=你的总结模型名
 ```
 
-将示例地址和模型名替换为服务商的真实值，实际密钥只填在本地 `.env` 文件中。服务需要支持 `/chat/completions` 和 `/audio/transcriptions`；语音模型需要支持带时间段的 `verbose_json` 响应。如果文本服务不支持语音，可通过 `ASR_BASE_URL`、`ASR_API_KEY` 和 `ASR_MODEL` 单独接入另一家语音服务。
+将示例地址和模型名替换为服务商的真实值，实际密钥填在前端设置或本地 `.env` 文件中，不要写入提交到 Git 的文件。上述 OpenAI 兼容示例要求文本服务支持 `/chat/completions`；云端语音需要支持 `/audio/transcriptions` 和带时间段的 `verbose_json` 响应。如果文本服务不支持语音，可通过 `ASR_BASE_URL`、`ASR_API_KEY` 和 `ASR_MODEL` 单独接入另一家语音服务。
 
 文本服务也可通过 `AI_BASE_URL` / `AI_API_KEY` 单独覆盖，留空时继承共享配置。`AI_PROVIDER=custom` 时，缺少地址或模型名不会自动回退到 OpenAI，也不会将环境中其他 `OPENAI_API_KEY` 转发给自定义服务。`openai` 模式保留 OpenAI 默认地址、默认模型和旧环境变量兼容。
 
 接入 Anthropic 兼容服务时，设置 `CLOUD_PROTOCOL=anthropic`，并填入服务商给出的 Base URL（例如以 `/apps/anthropic` 结尾的地址）。文本调用使用 `/v1/messages` 和 `x-api-key`，只展示响应中的文本块，不展示思考块。此文本入口不能直接当作 `/audio/transcriptions` 使用；语音需配置独立服务或选择本地 Whisper。协议说明见[阿里云 Messages 文档](https://help.aliyun.com/zh/model-studio/anthropic-api-messages)。
 
-修改配置后，请重启后端并刷新页面。语音、翻译和总结的配置就绪状态会分别显示；密钥不会发送到前端，也不会提交到 Git。
+只有修改 `.env` 中的部署参数后才需要重启后端并刷新页面；前端配置保存后立即生效。语音、翻译和总结的就绪状态分别显示；设置接口不回传已保存的密钥。`backend/.env` 被 Git 忽略，仓库仅包含空密钥示例，不包含本地部署使用的私有服务地址、密钥及模型配置。
 
 使用本地转写时，在后端虚拟环境中安装可选依赖：
 
@@ -193,7 +198,17 @@ CLOUD_SUMMARY_MODEL=你的总结模型名
 python -m pip install -r backend/requirements-asr.txt
 ```
 
-随后在 `backend/.env` 设置 `ASR_BACKEND=local`、`ASR_MODEL=base`。首次使用会下载模型；CPU 快速测试可选 `tiny`，较大模型需要更多资源。云端音频会分为十分钟的单声道 PCM 分片，控制在上传大小限制以内；本地转写的音频留在服务器。
+随后在前端选择“本地 Whisper”及 `base` 等模型，或在 `backend/.env` 设置 `ASR_BACKEND=local`、`ASR_MODEL=base`。首次使用会下载模型；CPU 快速测试可选 `tiny`，较大模型需要更多资源。音频分为十分钟的单声道 PCM 分片，云端上传控制在大小限制以内；本地转写的音频留在服务器。CPU 转写可能耗时较长，且存在错字，使用前请核对结果。
+
+### 常见分析问题
+
+| 现象 | 原因 / 处理方式 |
+| --- | --- |
+| 没有可用字幕 | 视频没有可读取的平台字幕，请使用“语音转文字”，或勾选无字幕时转写。 |
+| 转写一直显示 30% | 当前进度在音频分片处理完成后更新，不会逐句更新。不满十分钟的视频只有一个分片，完成前可能一直显示 30%；仅凭此状态不能判断失败。 |
+| AI 输出被截断或拒绝 | 当前提示合并了多个服务端结束原因。若是 `max_tokens`，可在服务商允许范围内提高上限；思考内容可能在正文生成前耗尽预算。真正的拒绝不能靠增加 Token 解决。 |
+| 模型配置会话过期 | 刷新页面并重新配置。前端会话是临时的，持久化部署默认值应写入 `.env`。 |
+| 重启后任务消失 | 任务引用保存在内存中，重启后不能继续复用；已生成文件仍在磁盘上，除非另行删除。 |
 
 使用本地文本模型时，启动已有 Ollama 服务，设置 `AI_PROVIDER=ollama`、`AI_BASE_URL=http://localhost:11434/v1`，并将 `AI_MODEL` 设为已安装的模型名，此模式不需要文本 API Key。Docker 后端需要使用容器可访问的服务地址，而非宿主机的 `localhost`。
 
