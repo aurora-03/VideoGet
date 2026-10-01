@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal
 import os
 import uuid
 import re
@@ -11,12 +11,15 @@ from urllib.request import Request as UrlRequest, urlopen
 
 from services.downloader import VideoDownloader
 from services.task_manager import TaskManager
+from services.video_analysis import VideoAnalysis
+from services.ai_client import AIClient, SpeechClient, ConfigurationError, capabilities
 
 router = APIRouter()
 
 # 初始化服务
 downloader = VideoDownloader()
 task_manager = TaskManager()
+video_analysis = VideoAnalysis(downloader, task_manager)
 
 
 def _format_error_message(err: Any) -> str:
@@ -83,6 +86,50 @@ class TaskStatusResponse(BaseModel):
     filename: Optional[str] = None
     download_url: Optional[str] = None
     error: Optional[str] = None
+    stage: Optional[str] = None
+    result: Optional[Dict[str, Any]] = None
+    subtitle_files: List[Dict[str, str]] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+
+
+class AnalysisRequest(BaseModel):
+    url: str
+    mode: Literal['subtitles', 'transcribe', 'translate', 'summarize'] = 'subtitles'
+    source_language: Literal['auto', 'zh', 'en', 'ja', 'ko', 'es', 'fr', 'de'] = 'auto'
+    target_language: Literal['zh', 'en', 'ja', 'ko', 'es', 'fr', 'de'] = 'zh'
+    source_task_id: Optional[uuid.UUID] = None
+    allow_transcription: bool = False
+
+
+@router.get('/ai/capabilities')
+async def get_ai_capabilities():
+    return capabilities()
+
+
+@router.post('/video/analyze')
+async def start_analysis(payload: AnalysisRequest, background_tasks: BackgroundTasks):
+    url = _extract_input_url(payload.url)
+    if not re.match(r'^https?://', url, flags=re.IGNORECASE):
+        raise HTTPException(status_code=400, detail='地址无效，请输入正确的视频链接')
+    source_id = str(payload.source_task_id) if payload.source_task_id else None
+    if source_id:
+        source = task_manager.get_task(source_id)
+        if not source or source.get('url') != url or not (source.get('result') or {}).get('segments'):
+            raise HTTPException(status_code=400, detail='已有文本任务不可用，请重新提取字幕')
+    try:
+        if payload.mode in {'translate', 'summarize'}:
+            AIClient().require_text(payload.mode)
+        if payload.mode == 'transcribe':
+            SpeechClient().require()
+    except ConfigurationError as error:
+        raise HTTPException(status_code=503, detail=str(error))
+    if not video_analysis.slots.acquire(blocking=False):
+        raise HTTPException(status_code=429, detail='分析任务繁忙，请稍后重试')
+    task_id = str(uuid.uuid4())
+    task_manager.create_task(task_id, url)
+    background_tasks.add_task(video_analysis.run, task_id, url, payload.mode, payload.source_language,
+                              payload.target_language, source_id, payload.allow_transcription)
+    return {'task_id': task_id, 'status': 'started'}
 
 
 @router.post("/video/info", response_model=VideoInfoResponse)
@@ -169,7 +216,11 @@ async def get_task_status(task_id: str):
         progress=task.get("progress", 0),
         filename=task.get("filename"),
         download_url=task.get("download_url"),
-        error=_format_error_message(task.get("error")) if task.get("error") else None
+        error=_format_error_message(task.get("error")) if task.get("error") else None,
+        stage=task.get('stage'),
+        result=task.get('result'),
+        subtitle_files=task.get('subtitle_files', []),
+        warnings=task.get('warnings', [])
     )
 
 

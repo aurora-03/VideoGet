@@ -8,7 +8,6 @@
           <ul class="space-y-2">
             <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('功能特性') }}</a></li>
             <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('支持平台') }}</a></li>
-            <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('套餐价格') }}</a></li>
             <li><a href="#" class="text-slate-500 hover:text-blue-600 transition-colors">{{ t('更新日志') }}</a></li>
           </ul>
         </div>

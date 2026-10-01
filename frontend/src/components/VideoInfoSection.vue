@@ -87,6 +87,11 @@
             </div>
 
             <!-- 下载进度条 -->
+            <div v-if="downloadFiles.length" class="mt-4 space-y-2">
+              <p class="text-sm font-medium text-slate-700">{{ t('下载文件') }}</p>
+              <a v-for="file in downloadFiles" :key="file.filename" :href="fileUrl(file.download_url)" :download="file.filename" class="block text-sm text-blue-600 hover:underline break-all">{{ file.filename }}</a>
+            </div>
+            <p v-for="warning in downloadWarnings" :key="warning" class="mt-3 text-sm text-amber-700">{{ t(warning) }}</p>
             <div v-if="downloading" class="mt-4">
               <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div class="h-full bg-blue-500 rounded-full transition-all duration-300" :style="{ width: downloadProgress + '%' }"></div>
@@ -103,12 +108,15 @@
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import { t, formatViews } from '../i18n.js'
+import { fileUrl } from '../api.js'
 
 const props = defineProps({
   videoInfo: Object,
   downloading: Boolean,
   downloadProgress: Number,
-  downloadStatus: String
+  downloadStatus: String,
+  downloadFiles: { type: Array, default: () => [] },
+  downloadWarnings: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['select-format', 'update-options', 'start-download'])

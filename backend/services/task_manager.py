@@ -1,4 +1,5 @@
 import threading
+from copy import deepcopy
 from typing import Dict, Any, Optional
 
 
@@ -18,19 +19,21 @@ class TaskManager:
                 "progress": 0,
                 "filename": None,
                 "download_url": None,
-                "error": None
+                "error": None,
+                "subtitle_files": [], "warnings": [], "stage": None, "result": None
             }
 
     def get_task(self, task_id: str) -> Optional[Dict[str, Any]]:
         """获取任务状态"""
         with self._lock:
-            return self._tasks.get(task_id)
+            task = self._tasks.get(task_id)
+            return deepcopy(task) if task else None
 
     def update_task(self, task_id: str, **kwargs) -> None:
         """更新任务状态"""
         with self._lock:
             if task_id in self._tasks:
-                self._tasks[task_id].update(kwargs)
+                self._tasks[task_id].update(deepcopy(kwargs))
 
     def set_status(self, task_id: str, status: str) -> None:
         """设置任务状态"""
