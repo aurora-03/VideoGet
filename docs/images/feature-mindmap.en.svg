@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 960" width="1480" height="960" role="img">
+<title>VideoGet · Feature mind map</title>
+<style>text{font-family:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif}</style>
+<defs>
+<marker id="arrow-current" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto"><polygon points="0 0,8 3.5,0 7" fill="#2563eb"/></marker>
+<marker id="arrow-planned" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto"><polygon points="0 0,8 3.5,0 7" fill="#ea580c"/></marker>
+</defs>
+<rect width="1480" height="960" fill="#ffffff"/>
+<text x="40" y="48" font-size="30" font-weight="700" fill="#111827">VideoGet · Feature mind map</text>
+<text x="40" y="80" font-size="18" fill="#6b7280">Current capabilities and planned work · built from the implementation</text>
+<path d="M 630,495 C 545.0,495 545.0,156 460,156" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-current)"/>
+<path d="M 630,495 C 545.0,495 545.0,426 460,426" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-current)"/>
+<path d="M 630,495 C 545.0,495 545.0,696 460,696" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-current)"/>
+<path d="M 850,495 C 935.0,495 935.0,156 1020,156" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-current)"/>
+<path d="M 850,495 C 935.0,495 935.0,426 1020,426" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-current)"/>
+<path d="M 850,495 C 935.0,495 935.0,696 1020,696" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="7,5" marker-end="url(#arrow-planned)"/>
+<rect x="40" y="120" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<rect x="52" y="132" width="396" height="48" rx="8" fill="#eff6ff"/>
+<circle cx="76" cy="156" r="14" fill="#2563eb"/>
+<text x="76" y="162" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">1</text>
+<text x="102" y="163" font-size="22" font-weight="600" fill="#111827">Video information</text>
+<path d="M 76,181 C 76,204 76,204 91,204" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="204" r="3" fill="#2563eb"/>
+<text x="104" y="210" font-size="18" fill="#374151">Paste a URL or share text</text>
+<path d="M 76,181 C 76,248 76,248 91,248" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="248" r="3" fill="#2563eb"/>
+<text x="104" y="254" font-size="18" fill="#374151">Title, author, cover and duration</text>
+<path d="M 76,181 C 76,292 76,292 91,292" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="292" r="3" fill="#2563eb"/>
+<text x="104" y="298" font-size="18" fill="#374151">Real quality options / best quality</text>
+<rect x="40" y="390" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<rect x="52" y="402" width="396" height="48" rx="8" fill="#eff6ff"/>
+<circle cx="76" cy="426" r="14" fill="#2563eb"/>
+<text x="76" y="432" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">2</text>
+<text x="102" y="433" font-size="22" font-weight="600" fill="#111827">Download media</text>
+<path d="M 76,451 C 76,474 76,474 91,474" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="474" r="3" fill="#2563eb"/>
+<text x="104" y="480" font-size="18" fill="#374151">Video with available audio</text>
+<path d="M 76,451 C 76,518 76,518 91,518" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="518" r="3" fill="#2563eb"/>
+<text x="104" y="524" font-size="18" fill="#374151">Extract MP3 using FFmpeg</text>
+<path d="M 76,451 C 76,562 76,562 91,562" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="562" r="3" fill="#2563eb"/>
+<text x="104" y="568" font-size="18" fill="#374151">Save available subtitles on server</text>
+<rect x="40" y="660" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<rect x="52" y="672" width="396" height="48" rx="8" fill="#eff6ff"/>
+<circle cx="76" cy="696" r="14" fill="#2563eb"/>
+<text x="76" y="702" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">3</text>
+<text x="102" y="703" font-size="22" font-weight="600" fill="#111827">Task tracking</text>
+<path d="M 76,721 C 76,744 76,744 91,744" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="744" r="3" fill="#2563eb"/>
+<text x="104" y="750" font-size="18" fill="#374151">Background download jobs</text>
+<path d="M 76,721 C 76,788 76,788 91,788" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="788" r="3" fill="#2563eb"/>
+<text x="104" y="794" font-size="18" fill="#374151">Progress polling and error messages</text>
+<path d="M 76,721 C 76,832 76,832 91,832" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="92" cy="832" r="3" fill="#2563eb"/>
+<text x="104" y="838" font-size="18" fill="#374151">Fetch the completed media file</text>
+<rect x="1020" y="120" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<rect x="1032" y="132" width="396" height="48" rx="8" fill="#eff6ff"/>
+<circle cx="1056" cy="156" r="14" fill="#2563eb"/>
+<text x="1056" y="162" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">4</text>
+<text x="1082" y="163" font-size="22" font-weight="600" fill="#111827">Platform adapters</text>
+<path d="M 1056,181 C 1056,204 1056,204 1071,204" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="204" r="3" fill="#2563eb"/>
+<text x="1084" y="210" font-size="18" fill="#374151">YouTube, Bilibili, TikTok and more</text>
+<path d="M 1056,181 C 1056,248 1056,248 1071,248" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="248" r="3" fill="#2563eb"/>
+<text x="1084" y="254" font-size="18" fill="#374151">Douyin / Kuaishou public share pages</text>
+<path d="M 1056,181 C 1056,292 1056,292 1071,292" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="292" r="3" fill="#2563eb"/>
+<text x="1084" y="298" font-size="18" fill="#374151">Vimeo player-URL fallback</text>
+<rect x="1020" y="390" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<rect x="1032" y="402" width="396" height="48" rx="8" fill="#eff6ff"/>
+<circle cx="1056" cy="426" r="14" fill="#2563eb"/>
+<text x="1056" y="432" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">5</text>
+<text x="1082" y="433" font-size="22" font-weight="600" fill="#111827">Access and delivery</text>
+<path d="M 1056,451 C 1056,474 1056,474 1071,474" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="474" r="3" fill="#2563eb"/>
+<text x="1084" y="480" font-size="18" fill="#374151">Optional authorized cookie file</text>
+<path d="M 1056,451 C 1056,518 1056,518 1071,518" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="518" r="3" fill="#2563eb"/>
+<text x="1084" y="524" font-size="18" fill="#374151">Known video password support</text>
+<path d="M 1056,451 C 1056,562 1056,562 1071,562" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="562" r="3" fill="#2563eb"/>
+<text x="1084" y="568" font-size="18" fill="#374151">Encoded filenames and final paths</text>
+<rect x="1020" y="660" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<rect x="1032" y="672" width="396" height="48" rx="8" fill="#fff7ed"/>
+<circle cx="1056" cy="696" r="14" fill="#ea580c"/>
+<text x="1056" y="702" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">6</text>
+<text x="1082" y="703" font-size="22" font-weight="600" fill="#111827">Planned features</text>
+<path d="M 1056,721 C 1056,744 1056,744 1071,744" fill="none" stroke="#ea580c" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="744" r="3" fill="#ea580c"/>
+<text x="1084" y="750" font-size="18" fill="#374151">AI summaries and subtitle translation</text>
+<path d="M 1056,721 C 1056,788 1056,788 1071,788" fill="none" stroke="#ea580c" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="788" r="3" fill="#ea580c"/>
+<text x="1084" y="794" font-size="18" fill="#374151">Batch workflow and download history</text>
+<path d="M 1056,721 C 1056,832 1056,832 1071,832" fill="none" stroke="#ea580c" opacity="0.45" stroke-width="1.4"/>
+<circle cx="1072" cy="832" r="3" fill="#ea580c"/>
+<text x="1084" y="838" font-size="18" fill="#374151">Accounts, payments and task storage</text>
+<rect x="630" y="443" width="220" height="104" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+<rect x="646" y="455" width="188" height="17" rx="5" fill="#dbeafe"/>
+<circle cx="658" cy="463" r="3.5" fill="#ef4444"/>
+<circle cx="672" cy="463" r="3.5" fill="#f59e0b"/>
+<circle cx="686" cy="463" r="3.5" fill="#10b981"/>
+<text x="740" y="505" text-anchor="middle" font-size="29" font-weight="700" fill="#1d4ed8">VideoGet</text>
+<text x="740" y="529" text-anchor="middle" font-size="16" fill="#6b7280">Video downloader</text>
+<path d="M 40,906 H 78" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+<text x="90" y="912" font-size="16" fill="#6b7280">Implemented capability</text>
+<path d="M 380,906 H 418" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="7,5" fill="none"/>
+<text x="430" y="912" font-size="16" fill="#6b7280">Planned / not implemented</text>
+<text x="40" y="944" font-size="16" fill="#6b7280">Limits: no DRM downloads · galleries unsupported · subtitle delivery is server-side · task state is in memory</text>
+</svg>

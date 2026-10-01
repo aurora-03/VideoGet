@@ -6,6 +6,25 @@
 
 VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API，原始项目文档中的部分功能仍处于规划阶段。
 
+## 页面截图
+
+当前界面为中文，使用 SaveAny 品牌名称。以下截图来自实际运行的前端，以及后端成功解析的 Bilibili 视频。
+
+<p>
+  <img src="docs/images/frontend-home.jpg" alt="VideoGet 首页与视频链接输入框" width="350" />
+  <img src="docs/images/frontend-video-info.jpg" alt="视频解析结果、画质选择、MP3 和字幕选项" width="350" />
+</p>
+
+## 功能思维导图
+
+蓝色分支表示已实现能力，橙色分支表示待开发功能。
+
+![VideoGet 功能思维导图](docs/images/feature-mindmap.zh-CN.png)
+
+[可编辑 SVG](docs/images/feature-mindmap.zh-CN.svg) · [English map](docs/images/feature-mindmap.en.png)
+
+安装 `rsvg-convert` 后，可运行 `python3 scripts/generate-feature-maps.py` 重新生成两种语言的导图。
+
 ## 功能
 
 - 解析视频标题、作者、封面、时长和可用画质。
@@ -48,10 +67,10 @@ Vimeo 原始测试样例需要密码；另一个公开样例返回了 DRM 保护
 
 ## 快速开始
 
-以下命令使用 Bash 或 zsh。当前开发改动位于 `dev` 分支。
+以下命令使用 Bash 或 zsh。默认版本位于 `main` 分支，后续开发使用 `dev` 分支。
 
 ```bash
-git clone --branch dev https://github.com/aurora-03/VideoGet.git
+git clone https://github.com/aurora-03/VideoGet.git
 cd VideoGet
 ```
 
@@ -176,6 +195,8 @@ VideoGet/
 │   ├── requirements-dev.txt
 │   └── .env.example
 ├── docker-compose.yml
+├── docs/images/                 # 页面截图与双语功能导图
+├── scripts/generate-feature-maps.py # 重新生成 SVG 和 PNG 功能导图
 ├── README.md                    # 默认英文文档
 └── README.zh-CN.md               # 简体中文文档
 ```
