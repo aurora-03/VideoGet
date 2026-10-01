@@ -1,175 +1,193 @@
-# VideoGet - 万能视频下载器
+# VideoGet
 
-一个现代化的视频下载网站，支持 1000+ 平台，提供 4K 高清下载、AI 视频总结、字幕翻译等功能。
+**English** | [简体中文](README.zh-CN.md)
 
-## ✨ 功能特性
+A web-based video downloader built with Vue 3, FastAPI, yt-dlp, and FFmpeg. Paste a video link, inspect its available quality options, and download the video or extract an MP3.
 
-- 🚀 **支持 1000+ 平台** - YouTube、Bilibili、抖音、快手、TikTok 等
-- 🎬 **4K 高清画质** - 最高支持 8K 画质下载
-- ⚡ **极速下载** - 多线程加速，充分利用带宽
-- 📦 **批量下载** - 一键下载整个播放列表/频道
-- 🤖 **AI 视频总结** - 智能生成视频摘要（Pro 功能）
-- 🌐 **字幕翻译** - 自动下载并翻译字幕（Pro 功能）
-- 📱 **响应式设计** - 手机电脑都能用
+VideoGet is an early MVP. The download workflow uses real backend APIs; some features advertised in the original project documents are still planned.
 
-## 🛠️ 技术栈
+## Features
 
-### 前端
-- Vue 3 - 渐进式 JavaScript 框架
-- Tailwind CSS - 实用优先的 CSS 框架
-- Vite - 下一代前端构建工具
+- Parse video titles, authors, thumbnails, durations, and available quality options.
+- Download videos with audio, or extract audio as MP3.
+- Track background downloads with a progress indicator.
+- Download available subtitles on the server.
+- Parse public Douyin and Kuaishou mobile share pages with built-in adapters.
+- Use optional server-side cookies and known video passwords for authorized content.
+- Responsive Vue interface and Docker Compose setup.
 
-### 后端
-- Python 3.11+
-- FastAPI - 高性能 Web 框架
-- yt-dlp - 强大的视频下载库
-- Uvicorn - ASGI 服务器
+AI summaries, subtitle translation, a complete batch-download workflow, accounts, payments, and persistent download history are not implemented. Subtitle files are saved on the server, but the interface currently delivers only the media file.
 
-### 部署
-- Docker + Docker Compose
+## Platform support
 
-## 🚀 快速开始
+| Platform | Implementation | Sample verification |
+| --- | --- | --- |
+| YouTube | yt-dlp | Download and file delivery passed |
+| Bilibili | yt-dlp with thumbnail fallback | Download and file delivery passed |
+| Douyin / 抖音 | Built-in mobile share-page parser | Video and MP3 downloads passed |
+| Kuaishou / 快手 | Built-in mobile share-page parser | Download and file delivery passed |
+| TikTok | yt-dlp | Download and file delivery passed |
+| Instagram | yt-dlp | Download and file delivery passed |
+| Twitter / X | yt-dlp | Download and file delivery passed |
+| Facebook | yt-dlp; best-quality option when dimensions are unknown | Download and file delivery passed |
+| Vimeo | yt-dlp with player-URL fallback | Password-protected fixture passed with its documented password |
+| Twitch | yt-dlp | Clip download and file delivery passed |
 
-### 方式一：使用 Docker（推荐）
+These results describe individual samples tested on the `dev` branch with yt-dlp `2026.8.19`. Successful samples were checked for file delivery and valid media using FFprobe. They do not guarantee that every video on a platform can be downloaded. Other websites supported by yt-dlp may also work.
 
-```bash
-# 克隆项目
-git clone <repository-url>
-cd video-get
+Douyin and Kuaishou adapters support video posts, not image galleries. Douyin reuses guest-session cookies and retries temporary empty responses. Neither adapter requires the previously missing `backend/third_party` directory.
 
-# 复制环境变量文件
-cd backend
-cp .env.example .env
-cd ..
+Vimeo's original test sample requires a password. Another public sample exposed DRM-protected streams and could not be downloaded. Private, login-required, password-protected, region-restricted, and DRM-protected content remain subject to their original restrictions; DRM downloads are not supported.
 
-# 启动服务
-docker-compose up -d
+## Requirements
 
-# 访问应用
-# 前端: http://localhost:3000
-# 后端 API: http://localhost:8000
-```
+- Python 3.11 or newer.
+- Node.js 20 or newer and npm.
+- FFmpeg and FFprobe available on `PATH` for media merging, MP3 conversion, and live verification.
+- Docker with Docker Compose, if using containers. The backend image includes FFmpeg.
 
-### 方式二：本地开发
+## Quick start
 
-#### 前端开发
+The commands below use Bash or zsh. Current development changes are on `dev`.
 
 ```bash
-cd frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 构建生产版本
-npm run build
+git clone --branch dev https://github.com/aurora-03/VideoGet.git
+cd VideoGet
 ```
 
-#### 后端开发
+### Local development
+
+Start the backend in one terminal:
 
 ```bash
 cd backend
-
-# 创建虚拟环境
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 复制环境变量
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 cp .env.example .env
-
-# 启动开发服务器
 python main.py
 ```
 
-## 📁 项目结构
+On Windows PowerShell, activate the environment with `.\.venv\Scripts\Activate.ps1`.
 
+Start the frontend in a second terminal, from the repository root:
+
+```bash
+cd frontend
+npm ci
+npm run dev
 ```
-video-get/
-├── frontend/                 # 前端项目
-│   ├── src/
-│   │   ├── components/      # Vue 组件
-│   │   │   ├── NavBar.vue
-│   │   │   ├── HeroSection.vue
-│   │   │   ├── DownloadSection.vue
-│   │   │   ├── FeaturesSection.vue
-│   │   │   ├── PricingSection.vue
-│   │   │   └── Footer.vue
-│   │   ├── App.vue
-│   │   ├── main.js
-│   │   └── style.css
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── Dockerfile
-├── backend/                  # 后端项目
-│   ├── api/                 # API 路由
-│   │   ├── __init__.py
-│   │   └── routes.py
-│   ├── services/            # 业务逻辑
-│   │   ├── __init__.py
-│   │   ├── downloader.py    # yt-dlp 封装
-│   │   └── task_manager.py  # 任务管理
-│   ├── downloads/           # 下载文件存储
-│   ├── main.py              # 应用入口
+
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend: [http://localhost:8000](http://localhost:8000)
+- API documentation: [Swagger UI](http://localhost:8000/docs) / [ReDoc](http://localhost:8000/redoc)
+
+### Docker Compose
+
+From the repository root:
+
+```bash
+cp backend/.env.example backend/.env
+mkdir -p backend/downloads
+docker compose up --build -d
+```
+
+The frontend and backend use the same ports as local development. Downloaded files are persisted in `backend/downloads`.
+
+The frontend currently calls `http://localhost:8000` directly. Before hosting remotely, using HTTPS, or accessing from another device, configure the frontend API address and backend CORS origins. The frontend container currently runs Vite's preview server; production deployment configuration still needs improvement.
+
+## Configuration
+
+Backend settings are loaded from `backend/.env` before download services are initialized.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `HOST` | `0.0.0.0` | Backend bind address |
+| `PORT` | `8000` | Backend port |
+| `DOWNLOAD_DIR` | `./downloads` | Media storage, relative to the backend working directory |
+| `ALLOWED_ORIGINS` | `http://localhost:3000,http://127.0.0.1:3000` in `.env.example` | Comma-separated CORS origins |
+| `YTDLP_COOKIE_FILE` | Unset | Path to an authorized Netscape-format cookie file |
+| `YTDLP_VIDEO_PASSWORD` | Unset | Known password for password-protected videos |
+
+`MAX_FILE_SIZE` appears in `.env.example`, but is not currently enforced. Task state is held in memory and is lost when the backend restarts. Rate limiting and automatic file cleanup are not implemented.
+
+Cookie files must be readable by the backend. In Docker, use a container-visible path and mount the file read-only. Keep cookie files and passwords out of Git.
+
+## API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/video/info` | Parse a video URL and return metadata and quality options |
+| `GET` | `/api/video/thumbnail?url=...` | Proxy a thumbnail image |
+| `POST` | `/api/download` | Create a background download task |
+| `GET` | `/api/task/{task_id}` | Retrieve task status, progress, and the completed file URL |
+| `GET` | `/api/download/file/{filename}` | Retrieve a downloaded file |
+| `GET` | `/api/supported-platforms` | Return the project's declared platform list |
+| `GET` | `/health` | Basic backend health check |
+
+Files are first downloaded to the server, then delivered to the browser. Quality selection uses the requested resolution as an upper bound; videos without known dimensions offer a “best quality” option.
+
+## Tests and builds
+
+Install development dependencies and run regression tests from the repository root, with your backend virtual environment active:
+
+```bash
+python -m pip install -r backend/requirements-dev.txt
+PYTHONPATH=backend python -m unittest discover -s backend/tests -v
+```
+
+Run opt-in live tests against the actual backend and platform URLs:
+
+```bash
+python backend/tests/live_platforms.py --platform Facebook 抖音 快手
+YTDLP_VIDEO_PASSWORD=youtube-dl python backend/tests/live_platforms.py --platform Vimeo
+python backend/tests/live_platforms.py --platform YouTube --audio
+python backend/tests/live_platforms.py --platform Vimeo --url https://vimeo.com/VIDEO_ID
+```
+
+The default Vimeo fixture is yt-dlp's password-protected test video, whose documented test password is `youtube-dl`. This is a test fixture password, not a default password for other videos.
+
+Live tests perform real downloads, verify file delivery, and inspect media with FFprobe. Reports and downloaded files are saved under `backend/downloads/verification-*`. Samples may become unavailable over time. The script also accepts `--timeout` and `--output`.
+
+Build the frontend:
+
+```bash
+cd frontend
+npm run build
+```
+
+## Project layout
+
+```text
+VideoGet/
+├── frontend/
+│   ├── src/App.vue              # Download workflow and task polling
+│   ├── src/components/          # Vue interface components
+│   └── package.json
+├── backend/
+│   ├── api/routes.py            # FastAPI endpoints
+│   ├── services/downloader.py   # yt-dlp integration and media delivery
+│   ├── services/share_parser.py # Douyin and Kuaishou adapters
+│   ├── services/task_manager.py # In-memory task state
+│   ├── tests/                   # Regression and opt-in live tests
+│   ├── downloads/               # Generated media and reports; ignored by Git
+│   ├── main.py
 │   ├── requirements.txt
-│   ├── .env.example
-│   └── Dockerfile
+│   ├── requirements-dev.txt
+│   └── .env.example
 ├── docker-compose.yml
-├── DESIGN_SYSTEM.md         # 设计系统文档
-└── README.md
+├── README.md                    # English documentation, default
+└── README.zh-CN.md               # Simplified Chinese documentation
 ```
 
-## 🎨 设计系统
+[PRD.md](PRD.md), [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md), and [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) contain original planning and design material. Some descriptions predate the current implementation; use the code and this README for current capabilities.
 
-项目采用**蓝色极简科技风格**。
+## Documentation languages
 
-主要特点：
-- 蓝白配色 + 简洁卡片
-- 蓝色主色调 + 柔和阴影
-- 流畅的微交互动画
-- 响应式设计，支持手机端
+English is the default in `README.md`; Simplified Chinese is maintained in `README.zh-CN.md`. Keep both versions aligned when changing capabilities, configuration, or setup instructions. Additional translations can follow the `README.<language-code>.md` naming convention and be linked in each README's language selector.
 
-详细设计规范请参考 [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)。
+## Contributing and usage
 
-## 🔧 API 文档
+Issues and pull requests are welcome. Use the `dev` branch for current development and include relevant regression checks with changes.
 
-启动后端服务后，访问以下地址查看 API 文档：
-
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-
-### 主要 API 端点
-
-| 端点 | 方法 | 说明 |
-|------|------|------|
-| `/api/video/info` | POST | 获取视频信息 |
-| `/api/download` | POST | 开始下载任务 |
-| `/api/task/{task_id}` | GET | 获取任务状态 |
-| `/api/download/file/{filename}` | GET | 下载已完成的文件 |
-| `/api/supported-platforms` | GET | 获取支持的平台列表 |
-
-## ⚠️ 免责声明
-
-1. 本项目仅供学习和个人使用
-2. 请遵守各视频平台的服务条款
-3. 用户下载的内容由用户自行负责
-4. 请勿将下载的内容用于商业用途
-5. 如有版权问题，请联系相关平台
-
-## 📄 许可证
-
-MIT License
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
----
-
-**注意**: 使用本工具下载视频时，请确保遵守相关法律法规和平台规则。
+Download only content you are authorized to save, and comply with the relevant platform terms and copyright requirements. The original project documentation states an MIT license, but this checkout does not yet include a standalone `LICENSE` file.
