@@ -14,6 +14,7 @@ from yt_dlp.networking import Request
 
 from services.ai_client import AIClient, SpeechClient
 from services.subtitles import cue_batches, normalize_segments, parse_subtitles, to_srt
+from services.model_settings import use_settings
 
 
 LANGUAGES = {'zh': 'Simplified Chinese', 'en': 'English', 'ja': 'Japanese', 'ko': 'Korean',
@@ -168,8 +169,8 @@ class VideoAnalysis:
         return {'filename': filename, 'download_url': '/api/download/file/' + quote(filename, safe=''),
                 'kind': kind, 'language': language}
 
-    async def run(self, task_id, url, mode, source_language, target_language, source_task_id, allow_transcription):
-        def process():
+    async def run(self, task_id, url, mode, source_language, target_language, source_task_id, allow_transcription, model_settings=None):
+        def process_inner():
             try:
                 self._stage(task_id, 'extracting_subtitles', 5)
                 previous = self.tasks.get_task(source_task_id) if source_task_id else None
@@ -209,4 +210,7 @@ class VideoAnalysis:
                 self.tasks.set_error(task_id, str(error))
             finally:
                 self.slots.release()
+        def process():
+            with use_settings(model_settings):
+                process_inner()
         await asyncio.to_thread(process)

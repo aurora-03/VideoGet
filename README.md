@@ -8,7 +8,7 @@ VideoGet is an early MVP. The download workflow uses real backend APIs; some fea
 
 ## Screenshots
 
-These captures show the actual English interface, using the SaveAny branding, and a real YouTube video parsed by the backend. Open [the English interface](http://localhost:3000/?lang=en) with `?lang=en`; `?lang=zh-CN` selects Chinese.
+These captures show the actual English interface, using the SaveAny branding, and a real YouTube video parsed by the backend. The [interface](http://localhost:3000/) defaults to English; `?lang=zh-CN` selects Chinese and `?lang=en` explicitly selects English.
 
 <p>
   <img src="docs/images/frontend-home.en.jpg" alt="English VideoGet homepage with video URL input" width="800" />
@@ -130,6 +130,8 @@ Backend settings are loaded from `backend/.env` before download services are ini
 | `YTDLP_VIDEO_PASSWORD` | Unset | Known password for password-protected videos |
 | `CLOUD_BASE_URL` | `https://api.openai.com/v1` in the example | Shared cloud API base URL for all three operations |
 | `CLOUD_API_KEY` | Unset | Shared server-side cloud API key |
+| `CLOUD_PROTOCOL` | `openai` | `openai` Chat Completions or `anthropic` Messages |
+| `AI_MAX_OUTPUT_TOKENS` | `16384` | Output token limit, including reasoning where applicable; configurable in model settings |
 | `CLOUD_ASR_MODEL` | `whisper-1` in the example | Cloud speech transcription model |
 | `CLOUD_TRANSLATION_MODEL` | `gpt-4o-mini` in the example | Cloud subtitle translation model |
 | `CLOUD_SUMMARY_MODEL` | `gpt-4o-mini` in the example | Cloud summary model |
@@ -148,6 +150,12 @@ Backend settings are loaded from `backend/.env` before download services are ini
 Cookie files must be readable by the backend. In Docker, use a container-visible path and mount the file read-only. Keep cookie files and passwords out of Git.
 
 ## Subtitles, speech and AI
+
+Open **Model settings** on the homepage to configure the service URL, OpenAI / Anthropic protocol, API key, translation model, summary model, output token limit, and cloud / local speech settings. Click **Save model settings**; changes apply immediately to this browser's subsequent jobs, without editing `.env` or restarting the backend.
+
+Browser-entered profiles are kept in server-side memory for up to two hours and isolated using an HttpOnly, SameSite cookie. API keys are never returned by the settings API or stored in browser localStorage / sessionStorage. Leave a key blank to retain it for the same service; changing the service address or protocol requires entering a new key. A separate speech address requires its own key if it differs from the shared address. Profiles expire on backend restart; running jobs retain their original configuration snapshot. `.env` remains available for deployment defaults and is not changed by the frontend.
+
+Serve the frontend and backend under the same site (for example using an `/api` reverse proxy); unrelated cross-site domains cannot share the strict session cookie.
 
 Parse a video, then use the **Subtitles & AI assistant** panel:
 
@@ -172,6 +180,8 @@ CLOUD_SUMMARY_MODEL=your-summary-model
 Replace the example URL and model names with those published by your provider, and enter the actual key only in the local `.env` file. The service must expose `/chat/completions` and `/audio/transcriptions`; speech must support `verbose_json` with timed segments. If your text provider does not support speech, override `ASR_BASE_URL`, `ASR_API_KEY` and `ASR_MODEL` for another speech service.
 
 `AI_BASE_URL` / `AI_API_KEY` can independently override the text service. Blank overrides inherit shared settings. With `AI_PROVIDER=custom`, a missing address or model does not silently fall back to OpenAI, and unrelated `OPENAI_API_KEY` environment credentials are not forwarded to your gateway. `openai` mode retains the standard OpenAI address, model defaults and legacy environment aliases.
+
+For an Anthropic-compatible gateway, set `CLOUD_PROTOCOL=anthropic` and use the supplied base URL (for example, a service ending in `/apps/anthropic`). Text calls use `/v1/messages`, `x-api-key`, and Anthropic text response blocks; reasoning blocks are excluded from displayed results. This text endpoint cannot be reused as `/audio/transcriptions`: configure an independent speech service or choose local Whisper. See [Alibaba Cloud's Messages reference](https://help.aliyun.com/zh/model-studio/anthropic-api-messages).
 
 Restart the backend and reload the page after changing model configuration. Readiness is reported separately for speech, translation and summaries. Keys are never sent to the frontend or committed to Git.
 
@@ -204,6 +214,8 @@ The integration follows [OpenAI's transcription interface](https://developers.op
 | `GET` | `/api/video/thumbnail?url=...` | Proxy a thumbnail image |
 | `POST` | `/api/download` | Create a background download task |
 | `GET` | `/api/ai/capabilities` | Report whether text and speech services are configured; excludes secrets |
+| `GET` | `/api/ai/settings` | Return current browser-session settings and key-present flags, never key values |
+| `POST` | `/api/ai/settings` | Save this browser's model settings; no global environment changes |
 | `POST` | `/api/video/analyze` | Start `subtitles`, `transcribe`, `translate` or `summarize` analysis |
 | `GET` | `/api/task/{task_id}` | Retrieve task status, progress, and the completed file URL |
 | `GET` | `/api/download/file/{filename}` | Retrieve a downloaded file |
