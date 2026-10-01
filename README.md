@@ -4,11 +4,13 @@
 
 A web-based video downloader built with Vue 3, FastAPI, yt-dlp, and FFmpeg. Paste a video link, inspect its available quality options, and download the video or extract an MP3.
 
+The frontend defaults to English and retains the original blue SaveAny layout. Model services can be configured from **Model settings** in the top-right navigation. The default output token limit is **16,384**, adjustable up to 32,768 within the model service's supported limits.
+
 VideoGet is an early MVP. The download workflow uses real backend APIs; some features advertised in the original project documents are still planned.
 
 ## Screenshots
 
-These captures show the actual English interface, using the SaveAny branding, and a real YouTube video parsed by the backend. The [interface](http://localhost:3000/) defaults to English; `?lang=zh-CN` selects Chinese and `?lang=en` explicitly selects English.
+The homepage capture shows the current English interface, including the top-right model settings entry. The video-details capture shows a real YouTube video parsed by the backend. The [interface](http://localhost:3000/) defaults to English; `?lang=zh-CN` selects Chinese and `?lang=en` explicitly selects English.
 
 <p>
   <img src="docs/images/frontend-home.en.jpg" alt="English VideoGet homepage with video URL input" width="800" />
@@ -32,6 +34,7 @@ To regenerate both maps, run `python3 scripts/generate-feature-maps.py` with `rs
 - Track background downloads with a progress indicator.
 - Extract existing captions or transcribe speech using cloud or local Whisper; download SRT and TXT results.
 - Translate timed subtitles and generate transcript-based AI summaries with a configured model service.
+- Configure OpenAI-compatible, Anthropic-compatible or local Ollama text services in the browser; speech can use a separate cloud service or local Whisper.
 - Parse public Douyin and Kuaishou mobile share pages with built-in adapters.
 - Use optional server-side cookies and known video passwords for authorized content.
 - Responsive Vue interface and Docker Compose setup.
@@ -151,7 +154,9 @@ Cookie files must be readable by the backend. In Docker, use a container-visible
 
 ## Subtitles, speech and AI
 
-Open **Model settings** on the homepage to configure the service URL, OpenAI / Anthropic protocol, API key, translation model, summary model, output token limit, and cloud / local speech settings. Click **Save model settings**; changes apply immediately to this browser's subsequent jobs, without editing `.env` or restarting the backend.
+Open **Model settings** in the top-right navigation to configure the service URL, OpenAI / Anthropic protocol, API key, translation model, summary model, output token limit, and cloud / local speech settings. Click **Save model settings**; changes apply immediately to this browser's subsequent jobs, without editing `.env` or restarting the backend.
+
+New profiles use a default output limit of **16,384 tokens** unless deployment configuration overrides it. Reasoning models can consume this budget before producing visible text. The limit is a ceiling, not a requested summary length, and does not guarantee completion for every model or input. You can change it in the same settings panel; the provider must support the chosen value.
 
 Browser-entered profiles are kept in server-side memory for up to two hours and isolated using an HttpOnly, SameSite cookie. API keys are never returned by the settings API or stored in browser localStorage / sessionStorage. Leave a key blank to retain it for the same service; changing the service address or protocol requires entering a new key. A separate speech address requires its own key if it differs from the shared address. Profiles expire on backend restart; running jobs retain their original configuration snapshot. `.env` remains available for deployment defaults and is not changed by the frontend.
 
@@ -177,13 +182,13 @@ CLOUD_TRANSLATION_MODEL=your-translation-model
 CLOUD_SUMMARY_MODEL=your-summary-model
 ```
 
-Replace the example URL and model names with those published by your provider, and enter the actual key only in the local `.env` file. The service must expose `/chat/completions` and `/audio/transcriptions`; speech must support `verbose_json` with timed segments. If your text provider does not support speech, override `ASR_BASE_URL`, `ASR_API_KEY` and `ASR_MODEL` for another speech service.
+Replace the example URL and model names with those published by your provider. Enter the actual key in the browser settings or the local `.env` file, never in committed files. For this OpenAI-compatible example, the text service must expose `/chat/completions`; cloud speech must expose `/audio/transcriptions` and support `verbose_json` with timed segments. If your text provider does not support speech, override `ASR_BASE_URL`, `ASR_API_KEY` and `ASR_MODEL` for another speech service.
 
 `AI_BASE_URL` / `AI_API_KEY` can independently override the text service. Blank overrides inherit shared settings. With `AI_PROVIDER=custom`, a missing address or model does not silently fall back to OpenAI, and unrelated `OPENAI_API_KEY` environment credentials are not forwarded to your gateway. `openai` mode retains the standard OpenAI address, model defaults and legacy environment aliases.
 
 For an Anthropic-compatible gateway, set `CLOUD_PROTOCOL=anthropic` and use the supplied base URL (for example, a service ending in `/apps/anthropic`). Text calls use `/v1/messages`, `x-api-key`, and Anthropic text response blocks; reasoning blocks are excluded from displayed results. This text endpoint cannot be reused as `/audio/transcriptions`: configure an independent speech service or choose local Whisper. See [Alibaba Cloud's Messages reference](https://help.aliyun.com/zh/model-studio/anthropic-api-messages).
 
-Restart the backend and reload the page after changing model configuration. Readiness is reported separately for speech, translation and summaries. Keys are never sent to the frontend or committed to Git.
+Restart the backend and reload the page only after changing deployment settings in `.env`; browser settings take effect after saving. Readiness is reported separately for speech, translation and summaries. The settings API never returns saved key values. `backend/.env` is ignored by Git; the repository contains blank-key examples, not private service credentials or the local deployment's model profile.
 
 For local speech recognition, install the optional dependencies in the backend virtual environment:
 
@@ -191,7 +196,17 @@ For local speech recognition, install the optional dependencies in the backend v
 python -m pip install -r backend/requirements-asr.txt
 ```
 
-Then set `ASR_BACKEND=local` and `ASR_MODEL=base` in `backend/.env`. The first request downloads the model; `tiny` is useful for CPU smoke tests, while larger models generally require more resources. Cloud audio is split into ten-minute mono PCM chunks below the upload size limit. Local speech stays on the server.
+Then select **Local Whisper** and a model such as `base` in the browser, or set `ASR_BACKEND=local` and `ASR_MODEL=base` in `backend/.env`. The first request downloads the model; `tiny` is useful for CPU smoke tests, while larger models generally require more resources. Audio is split into ten-minute mono PCM chunks; cloud uploads stay below the size limit. Local speech stays on the server. CPU transcription can take time and may misrecognize words; review the output before relying on it.
+
+### Common analysis issues
+
+| Symptom | Meaning / next step |
+| --- | --- |
+| No available subtitles | The video has no accessible platform captions. Use **Speech to text**, or enable the fallback checkbox. |
+| Transcription stays at 30% | Progress updates after an audio chunk completes, not after every recognized sentence. A video shorter than ten minutes can remain at 30% until its only chunk finishes. This alone does not indicate failure. |
+| AI output truncated or refused | The current message combines several provider stop reasons. For `max_tokens`, increase the output limit within provider limits; reasoning can exhaust it before visible text appears. Increasing tokens does not resolve an actual refusal. |
+| Model session expired | Reload the page and configure the session again. Browser profiles are temporary; use `.env` for persistent deployment defaults. |
+| Jobs disappear after a backend restart | Task references are in memory and cannot be reused after restarting. Already generated files remain on disk unless removed separately. |
 
 For local text models, run an existing Ollama service and set `AI_PROVIDER=ollama`, `AI_BASE_URL=http://localhost:11434/v1` and `AI_MODEL` to an installed model name. No text API key is required for this mode. A Docker backend needs a container-reachable model address instead of host `localhost`.
 
