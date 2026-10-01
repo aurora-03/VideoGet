@@ -6,6 +6,25 @@ A web-based video downloader built with Vue 3, FastAPI, yt-dlp, and FFmpeg. Past
 
 VideoGet is an early MVP. The download workflow uses real backend APIs; some features advertised in the original project documents are still planned.
 
+## Screenshots
+
+The current interface is in Chinese and uses the SaveAny branding. These captures show the running frontend and a real Bilibili video parsed by the backend.
+
+<p>
+  <img src="docs/images/frontend-home.jpg" alt="VideoGet homepage with video URL input" width="350" />
+  <img src="docs/images/frontend-video-info.jpg" alt="Parsed video with quality, MP3 and subtitle options" width="350" />
+</p>
+
+## Feature mind map
+
+Blue branches describe implemented capabilities; the orange branch contains planned features.
+
+![VideoGet feature mind map](docs/images/feature-mindmap.en.png)
+
+[Editable SVG](docs/images/feature-mindmap.en.svg) · [中文导图](docs/images/feature-mindmap.zh-CN.png)
+
+To regenerate both maps, run `python3 scripts/generate-feature-maps.py` with `rsvg-convert` installed.
+
 ## Features
 
 - Parse video titles, authors, thumbnails, durations, and available quality options.
@@ -48,10 +67,10 @@ Vimeo's original test sample requires a password. Another public sample exposed 
 
 ## Quick start
 
-The commands below use Bash or zsh. Current development changes are on `dev`.
+The commands below use Bash or zsh. Clone `main` for the default version; ongoing development uses `dev`.
 
 ```bash
-git clone --branch dev https://github.com/aurora-03/VideoGet.git
+git clone https://github.com/aurora-03/VideoGet.git
 cd VideoGet
 ```
 
@@ -176,6 +195,8 @@ VideoGet/
 │   ├── requirements-dev.txt
 │   └── .env.example
 ├── docker-compose.yml
+├── docs/images/                 # Screenshots and bilingual feature maps
+├── scripts/generate-feature-maps.py # Regenerate SVG and PNG feature maps
 ├── README.md                    # English documentation, default
 └── README.zh-CN.md               # Simplified Chinese documentation
 ```
