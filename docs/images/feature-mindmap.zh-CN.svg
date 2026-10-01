@@ -74,16 +74,16 @@
 <rect x="1032" y="402" width="396" height="48" rx="8" fill="#eff6ff"/>
 <circle cx="1056" cy="426" r="14" fill="#2563eb"/>
 <text x="1056" y="432" text-anchor="middle" font-size="16" fill="#ffffff" font-weight="700">5</text>
-<text x="1082" y="433" font-size="22" font-weight="600" fill="#111827">访问与文件交付</text>
+<text x="1082" y="433" font-size="22" font-weight="600" fill="#111827">字幕与 AI</text>
 <path d="M 1056,451 C 1056,474 1056,474 1071,474" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
 <circle cx="1072" cy="474" r="3" fill="#2563eb"/>
-<text x="1084" y="480" font-size="18" fill="#374151">可配置已有授权的 Cookie 文件</text>
+<text x="1084" y="480" font-size="18" fill="#374151">提取字幕 / 本地或云端语音转写</text>
 <path d="M 1056,451 C 1056,518 1056,518 1071,518" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
 <circle cx="1072" cy="518" r="3" fill="#2563eb"/>
-<text x="1084" y="524" font-size="18" fill="#374151">支持提供已知视频密码</text>
+<text x="1084" y="524" font-size="18" fill="#374151">保留时间轴的字幕翻译</text>
 <path d="M 1056,451 C 1056,562 1056,562 1071,562" fill="none" stroke="#2563eb" opacity="0.45" stroke-width="1.4"/>
 <circle cx="1072" cy="562" r="3" fill="#2563eb"/>
-<text x="1084" y="568" font-size="18" fill="#374151">文件名编码与转换后路径校验</text>
+<text x="1084" y="568" font-size="18" fill="#374151">基于字幕或语音文字的 AI 总结</text>
 <rect x="1020" y="660" width="420" height="210" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
 <rect x="1032" y="672" width="396" height="48" rx="8" fill="#fff7ed"/>
 <circle cx="1056" cy="696" r="14" fill="#ea580c"/>
@@ -91,13 +91,13 @@
 <text x="1082" y="703" font-size="22" font-weight="600" fill="#111827">待开发功能</text>
 <path d="M 1056,721 C 1056,744 1056,744 1071,744" fill="none" stroke="#ea580c" opacity="0.45" stroke-width="1.4"/>
 <circle cx="1072" cy="744" r="3" fill="#ea580c"/>
-<text x="1084" y="750" font-size="18" fill="#374151">AI 总结与字幕翻译</text>
+<text x="1084" y="750" font-size="18" fill="#374151">完整批量下载流程</text>
 <path d="M 1056,721 C 1056,788 1056,788 1071,788" fill="none" stroke="#ea580c" opacity="0.45" stroke-width="1.4"/>
 <circle cx="1072" cy="788" r="3" fill="#ea580c"/>
-<text x="1084" y="794" font-size="18" fill="#374151">完整批量流程与下载历史</text>
+<text x="1084" y="794" font-size="18" fill="#374151">账户与下载历史</text>
 <path d="M 1056,721 C 1056,832 1056,832 1071,832" fill="none" stroke="#ea580c" opacity="0.45" stroke-width="1.4"/>
 <circle cx="1072" cy="832" r="3" fill="#ea580c"/>
-<text x="1084" y="838" font-size="18" fill="#374151">账户、支付与任务持久化</text>
+<text x="1084" y="838" font-size="18" fill="#374151">任务持久化与监控</text>
 <rect x="630" y="443" width="220" height="104" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
 <rect x="646" y="455" width="188" height="17" rx="5" fill="#dbeafe"/>
 <circle cx="658" cy="463" r="3.5" fill="#ef4444"/>
@@ -109,5 +109,5 @@
 <text x="90" y="912" font-size="16" fill="#6b7280">已实现能力</text>
 <path d="M 380,906 H 418" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="7,5" fill="none"/>
 <text x="430" y="912" font-size="16" fill="#6b7280">规划中 / 尚未实现</text>
-<text x="40" y="944" font-size="16" fill="#6b7280">限制：不支持 DRM 下载及图文作品 · 字幕仅保存在服务端 · 任务状态暂存内存</text>
+<text x="40" y="944" font-size="16" fill="#6b7280">限制：不支持 DRM 下载及图文作品 · AI 需要配置模型服务 · 任务状态暂存内存</text>
 </svg>

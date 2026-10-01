@@ -335,6 +335,16 @@ class VideoDownloader:
                     download_url = f"/api/download/file/{quote(actual_filename, safe='')}"
 
                     if task_manager:
+                        subtitle_files = []
+                        if download_subtitle:
+                            for path in self.download_dir.glob(f'*-{unique_id}.*'):
+                                if path.suffix.lower() not in {'.vtt', '.srt', '.ass', '.ttml', '.json', '.json3'}:
+                                    continue
+                                if path.is_file() and path.stat().st_size > 0:
+                                    subtitle_files.append({'filename': path.name,
+                                        'download_url': '/api/download/file/' + quote(path.name, safe='')})
+                        warnings = ['该视频没有下载到可用字幕，可尝试语音转文字'] if download_subtitle and not subtitle_files else []
+                        task_manager.update_task(task_id, subtitle_files=subtitle_files, warnings=warnings)
                         task_manager.set_complete(task_id, actual_filename, download_url)
 
             except Exception as e:

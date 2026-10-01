@@ -14,6 +14,7 @@
             <component :is="feature.icon" class="w-6 h-6 text-blue-600" />
           </div>
           <h3 class="text-lg font-bold text-slate-800 mb-2">{{ feature.title }}</h3>
+          <span v-if="feature.planned" class="inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-2 py-1 mb-2">{{ t('规划中') }}</span>
           <p class="text-slate-500">{{ feature.description }}</p>
         </div>
       </div>
@@ -49,6 +50,7 @@ const features = [
   },
   {
     title: t('批量下载'),
+    planned: true,
     description: t('一键下载整个播放列表、频道或合集，省时省力'),
     icon: () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24', 'stroke-width': '2' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4' })

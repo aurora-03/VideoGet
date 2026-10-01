@@ -32,12 +32,13 @@ VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API�
 - 解析视频标题、作者、封面、时长和可用画质。
 - 下载含音轨的视频，或提取 MP3 音频。
 - 通过进度条查看后台下载任务。
-- 将可用字幕下载到服务器。
+- 提取已有字幕，或通过云端 / 本地 Whisper 将语音转为文字，支持 SRT 和 TXT 下载。
+- 配置模型服务后，可翻译带时间轴的字幕，并生成基于文字的 AI 总结。
 - 使用内置适配器解析抖音和快手的公开移动分享页。
 - 可配置服务端 Cookie 和已知视频密码，访问已有授权的内容。
 - 响应式 Vue 界面及 Docker Compose 配置。
 
-AI 总结、字幕翻译、完整批量下载流程、账户、支付及持久化下载历史尚未实现。字幕文件会保存在服务器，但界面目前只交付媒体文件。
+AI 功能需要配置模型服务，缺少配置时界面会明确提示。完整批量下载流程、账户及持久化下载历史尚未实现。视频下载会返回可用字幕文件地址，没有字幕时也会提示。
 
 ## 平台支持
 
@@ -115,7 +116,7 @@ docker compose up --build -d
 
 前后端端口与本地开发相同，下载文件持久保存在 `backend/downloads`。
 
-前端目前直接请求 `http://localhost:8000`。部署到远程服务器、使用 HTTPS 或通过其他设备访问前，需要配置前端 API 地址及后端 CORS 来源。前端容器目前使用 Vite 预览服务，生产部署配置仍需完善。
+前端默认请求 `http://localhost:8000/api`。部署到远程服务器、使用 HTTPS 或通过其他设备访问前，可在 `frontend/.env` 中设置 `VITE_API_BASE_URL`，并配置后端 CORS 来源。前端容器目前使用 Vite 预览服务，生产部署配置仍需完善。
 
 ## 配置
 
@@ -129,10 +130,73 @@ docker compose up --build -d
 | `ALLOWED_ORIGINS` | `.env.example` 中为 `http://localhost:3000,http://127.0.0.1:3000` | 逗号分隔的 CORS 来源 |
 | `YTDLP_COOKIE_FILE` | 未设置 | 已有授权的 Netscape 格式 Cookie 文件路径 |
 | `YTDLP_VIDEO_PASSWORD` | 未设置 | 密码保护视频的已知密码 |
+| `CLOUD_BASE_URL` | 示例中为 `https://api.openai.com/v1` | 三个功能共用的云端 API 地址 |
+| `CLOUD_API_KEY` | 未设置 | 共用的服务端云端密钥 |
+| `CLOUD_ASR_MODEL` | 示例中为 `whisper-1` | 云端语音转写模型 |
+| `CLOUD_TRANSLATION_MODEL` | 示例中为 `gpt-4o-mini` | 云端字幕翻译模型 |
+| `CLOUD_SUMMARY_MODEL` | 示例中为 `gpt-4o-mini` | 云端总结模型 |
+| `AI_PROVIDER` | `openai` | OpenAI、自定义兼容服务 `custom` 或本地 `ollama` |
+| `AI_BASE_URL` | 共用云端地址 | 可单独覆盖文本模型服务地址 |
+| `AI_MODEL` | OpenAI 模式下为 `gpt-4o-mini` | 云端文本备用模型，本地 Ollama 时需指定 |
+| `AI_API_KEY` | 共用云端密钥 | 可单独覆盖文本服务密钥 |
+| `ASR_BACKEND` | `api` | 云端 `api` 或本地 Faster Whisper：`local` |
+| `ASR_MODEL` | `whisper-1` / `base` | 云端 / 本地语音模型 |
+| `ASR_BASE_URL` | 共用云端地址 | 可单独覆盖语音转写服务地址 |
+| `ASR_API_KEY` | 共用云端密钥 | 可单独覆盖语音服务密钥 |
+| `ANALYSIS_MAX_DURATION` | `7200` | 可分析的视频已知时长上限，单位秒 |
 
 `.env.example` 中的 `MAX_FILE_SIZE` 目前尚未执行限制。任务状态保存在内存中，后端重启后丢失；限流和自动文件清理尚未实现。
 
 Cookie 文件需要后端可读。Docker 中须使用容器内的路径，并以只读卷挂载文件。请勿将 Cookie 文件或密码提交到 Git。
+
+## 字幕、语音转文字与 AI
+
+解析视频后，可以使用“字幕与 AI 助手”面板：
+
+1. **提取字幕**：读取平台已有字幕，无需下载完整视频，可选择原文和目标语言。
+2. **语音转文字**：获取音频并生成带时间轴的文字。勾选“无字幕时使用语音转文字”后，没有字幕时可自动转写。
+3. **翻译字幕**：保留原始时间轴，导出译文 SRT。**生成 AI 总结**：对完整文本分段处理并合并，不会只截取开头内容。
+
+后续翻译和总结会复用已提取的原文。结果可以查看并下载为 SRT / TXT；模型请求失败时，已经提取的原文仍可用于重试。总结基于字幕或语音内容，不会描述文字中没有的画面信息。当前翻译和总结支持中文、英语、日语、韩语、西班牙语、法语和德语。
+
+使用自定义兼容服务时，在 `backend/.env` 配置共用云端地址、密钥及服务商提供的模型名：
+
+```dotenv
+AI_PROVIDER=custom
+ASR_BACKEND=api
+CLOUD_BASE_URL=https://你的云服务地址/v1
+CLOUD_API_KEY=
+CLOUD_ASR_MODEL=你的语音模型名
+CLOUD_TRANSLATION_MODEL=你的翻译模型名
+CLOUD_SUMMARY_MODEL=你的总结模型名
+```
+
+将示例地址和模型名替换为服务商的真实值，实际密钥只填在本地 `.env` 文件中。服务需要支持 `/chat/completions` 和 `/audio/transcriptions`；语音模型需要支持带时间段的 `verbose_json` 响应。如果文本服务不支持语音，可通过 `ASR_BASE_URL`、`ASR_API_KEY` 和 `ASR_MODEL` 单独接入另一家语音服务。
+
+文本服务也可通过 `AI_BASE_URL` / `AI_API_KEY` 单独覆盖，留空时继承共享配置。`AI_PROVIDER=custom` 时，缺少地址或模型名不会自动回退到 OpenAI，也不会将环境中其他 `OPENAI_API_KEY` 转发给自定义服务。`openai` 模式保留 OpenAI 默认地址、默认模型和旧环境变量兼容。
+
+修改配置后，请重启后端并刷新页面。语音、翻译和总结的配置就绪状态会分别显示；密钥不会发送到前端，也不会提交到 Git。
+
+使用本地转写时，在后端虚拟环境中安装可选依赖：
+
+```bash
+python -m pip install -r backend/requirements-asr.txt
+```
+
+随后在 `backend/.env` 设置 `ASR_BACKEND=local`、`ASR_MODEL=base`。首次使用会下载模型；CPU 快速测试可选 `tiny`，较大模型需要更多资源。云端音频会分为十分钟的单声道 PCM 分片，控制在上传大小限制以内；本地转写的音频留在服务器。
+
+使用本地文本模型时，启动已有 Ollama 服务，设置 `AI_PROVIDER=ollama`、`AI_BASE_URL=http://localhost:11434/v1`，并将 `AI_MODEL` 设为已安装的模型名，此模式不需要文本 API Key。Docker 后端需要使用容器可访问的服务地址，而非宿主机的 `localhost`。
+
+为 Docker 后端镜像安装本地转写依赖：
+
+```bash
+docker compose build --build-arg INSTALL_LOCAL_ASR=true backend
+docker compose up -d
+```
+
+分析服务目前允许两个任务并行，时长上限可配置，任务状态仍保存在内存中。云端处理会将文字或音频发送给配置的模型服务；不希望发送时可使用本地模式。
+
+接口依据 [OpenAI 语音转写说明](https://developers.openai.com/api/docs/guides/speech-to-text) 和 [JSON 输出格式](https://developers.openai.com/api/docs/guides/structured-outputs) 实现，本地语音识别使用 [Faster Whisper](https://github.com/SYSTRAN/faster-whisper)。
 
 ## API
 
@@ -141,12 +205,16 @@ Cookie 文件需要后端可读。Docker 中须使用容器内的路径，并以
 | `POST` | `/api/video/info` | 解析视频链接，返回信息及画质选项 |
 | `GET` | `/api/video/thumbnail?url=...` | 代理获取封面图片 |
 | `POST` | `/api/download` | 创建后台下载任务 |
+| `GET` | `/api/ai/capabilities` | 返回文本和语音服务配置状态，不包含密钥 |
+| `POST` | `/api/video/analyze` | 启动字幕提取、语音转写、字幕翻译或总结任务 |
 | `GET` | `/api/task/{task_id}` | 获取任务状态、进度和完成后的文件地址 |
 | `GET` | `/api/download/file/{filename}` | 获取已下载的文件 |
 | `GET` | `/api/supported-platforms` | 返回项目声明的平台列表 |
 | `GET` | `/health` | 基础后端健康检查 |
 
 文件先下载到服务器，再交付到浏览器。画质选择以请求的分辨率为上限；分辨率未知的视频提供“最佳画质”选项。
+
+分析任务响应包含 `stage`、`progress` 和 `result`，结果提供带时间轴的 `segments`、原文、可选译文 / 总结及下载地址。使用 `source_task_id` 可以复用已有文本。字幕提取无需 AI 密钥；语音和文本操作缺少必需服务配置时会明确报错。
 
 ## 测试与构建
 

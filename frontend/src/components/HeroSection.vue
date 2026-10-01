@@ -92,7 +92,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import { api } from '../api.js'
 import { t } from '../i18n.js'
 
 const emit = defineEmits(['video-info'])
@@ -153,7 +153,7 @@ async function fetchVideoInfo() {
 
   try {
     url.value = normalizedUrl
-    const response = await axios.post('http://localhost:8000/api/video/info', {
+    const response = await api.post('/video/info', {
       url: normalizedUrl
     })
     emit('video-info', response.data)

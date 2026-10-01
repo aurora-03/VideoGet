@@ -1,0 +1,4 @@
+-r requirements.txt
+faster-whisper>=1.1.0
+# PyAV 19 removed metadata_errors, still used by faster-whisper's decoder.
+av>=11,<19

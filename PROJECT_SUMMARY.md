@@ -17,7 +17,6 @@ video-get/
 │   │   │   ├── HeroSection.vue      # Hero 区域
 │   │   │   ├── DownloadSection.vue  # 下载区域（核心）
 │   │   │   ├── FeaturesSection.vue  # 功能特性
-│   │   │   ├── PricingSection.vue   # 定价会员
 │   │   │   └── Footer.vue           # 页脚
 │   │   ├── App.vue
 │   │   ├── main.js
@@ -124,16 +123,18 @@ python main.py
 - [x] 画质选择（4K/1080p/720p/480p）
 - [x] 下载进度条
 - [x] 功能特性展示
-- [x] 定价会员页面（吸引付费）
 - [x] FastAPI 后端框架
 - [x] yt-dlp 集成
 - [x] 任务管理系统
 - [x] Docker 容器化
+- [x] 平台字幕提取及 SRT / TXT 下载
+- [x] 云端 / 本地 Whisper 语音转文字
+- [x] 字幕翻译与 AI 总结接口及界面（需要配置模型服务）
 
-### 🔄 前端模拟数据
-当前前端使用模拟数据演示 UI，实际使用时需要：
-1. 启动后端服务
-2. 连接真实 API
+### 运行与模型配置
+当前首页已连接真实 API；遗留的 `DownloadSection.vue` 仍是未挂载的模拟组件。
+字幕提取无需模型密钥。翻译和总结需配置服务端文本模型；语音转写可选云端接口或安装本地 Whisper 依赖。
+详见中英文 README 的“字幕、语音转文字与 AI”配置说明。
 
 ---
 
@@ -146,6 +147,8 @@ python main.py
 | `/api/task/{task_id}` | GET | 查询任务状态和进度 |
 | `/api/download/file/{filename}` | GET | 下载完成的文件 |
 | `/api/supported-platforms` | GET | 支持的平台列表 |
+| `/api/ai/capabilities` | GET | 文本和语音服务配置状态 |
+| `/api/video/analyze` | POST | 字幕提取、语音转写、字幕翻译和总结任务 |
 | `/docs` | GET | Swagger API 文档 |
 
 ---
@@ -172,8 +175,7 @@ python main.py
 2. **连接前后端** - 修改前端调用真实 API
 3. **添加 WebSocket** - 实时推送下载进度
 4. **用户系统** - 添加登录注册功能
-5. **支付集成** - 实现会员支付功能
-6. **部署上线** - 部署到服务器
+5. **部署上线** - 部署到服务器
 
 ---
 

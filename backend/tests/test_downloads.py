@@ -90,6 +90,27 @@ class DownloadRegressionTests(unittest.TestCase):
             asyncio.run(self.downloader.download_video('missing', 'https://example.com/video', task_manager=tasks))
         self.assertEqual(tasks.get_task('missing')['status'], 'error')
 
+    def test_download_exposes_subtitle_files_or_missing_caption_warning(self):
+        for has_subtitles in [True, False]:
+            tasks = TaskManager()
+            tasks.create_task('caption-download', 'https://example.com/video')
+            def extract(downloader, ydl, url, download):
+                filename = ydl.prepare_filename({'title': 'test', 'id': 'test', 'ext': 'mp4'})
+                media = Path(filename)
+                media.write_bytes(b'video')
+                if has_subtitles:
+                    media.with_suffix('.en.vtt').write_text('WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nCaption\n')
+                for hook in ydl.params['post_hooks']:
+                    hook(str(media))
+                return {'id': 'test', 'title': 'test', 'ext': 'mp4'}
+            with patch.object(VideoDownloader, '_extract_media', extract):
+                asyncio.run(self.downloader.download_video('caption-download', 'https://example.com/video',
+                    download_subtitle=True, task_manager=tasks))
+            task = tasks.get_task('caption-download')
+            self.assertEqual(task['status'], 'completed', task.get('error'))
+            self.assertEqual(len(task['subtitle_files']), 1 if has_subtitles else 0)
+            self.assertEqual(len(task['warnings']), 0 if has_subtitles else 1)
+
     def test_vimeo_retries_player_for_both_info_and_download(self):
         from yt_dlp.utils import DownloadError
         for download in [False, True]:

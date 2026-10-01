@@ -18,10 +18,10 @@ CONTENT = {
             ('Download media', ['Video with available audio', 'Extract MP3 using FFmpeg', 'Save available subtitles on server']),
             ('Task tracking', ['Background download jobs', 'Progress polling and error messages', 'Fetch the completed media file']),
             ('Platform adapters', ['YouTube, Bilibili, TikTok and more', 'Douyin / Kuaishou public share pages', 'Vimeo player-URL fallback']),
-            ('Access and delivery', ['Optional authorized cookie file', 'Known video password support', 'Encoded filenames and final paths']),
-            ('Planned features', ['AI summaries and subtitle translation', 'Batch workflow and download history', 'Accounts, payments and task storage']),
+            ('Transcripts and AI', ['Captions / local or cloud Whisper', 'Timed subtitle translation', 'Transcript-based AI summaries']),
+            ('Planned features', ['Complete batch-download workflow', 'Accounts and download history', 'Persistent task storage / monitoring']),
         ],
-        'note': 'Limits: no DRM downloads · galleries unsupported · subtitle delivery is server-side · task state is in memory',
+        'note': 'Limits: no DRM or galleries · model services required for AI · task state is in memory',
     },
     'zh-CN': {
         'title': 'VideoGet · 功能思维导图',
@@ -33,10 +33,10 @@ CONTENT = {
             ('媒体下载', ['下载视频及可用音轨', '通过 FFmpeg 提取 MP3', '将可用字幕保存到服务器']),
             ('任务跟踪', ['创建后台下载任务', '轮询进度并显示错误提示', '获取下载完成的媒体文件']),
             ('平台适配', ['YouTube、B站、TikTok 等平台', '抖音 / 快手公开分享页解析', 'Vimeo 播放器地址回退']),
-            ('访问与文件交付', ['可配置已有授权的 Cookie 文件', '支持提供已知视频密码', '文件名编码与转换后路径校验']),
-            ('待开发功能', ['AI 总结与字幕翻译', '完整批量流程与下载历史', '账户、支付与任务持久化']),
+            ('字幕与 AI', ['提取字幕 / 本地或云端语音转写', '保留时间轴的字幕翻译', '基于字幕或语音文字的 AI 总结']),
+            ('待开发功能', ['完整批量下载流程', '账户与下载历史', '任务持久化与监控']),
         ],
-        'note': '限制：不支持 DRM 下载及图文作品 · 字幕仅保存在服务端 · 任务状态暂存内存',
+        'note': '限制：不支持 DRM 下载及图文作品 · AI 需要配置模型服务 · 任务状态暂存内存',
     },
 }
 
