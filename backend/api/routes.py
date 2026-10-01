@@ -31,6 +31,14 @@ def _format_error_message(err: Any) -> str:
         return "暂不支持该链接格式，请确认是可访问的视频地址"
     if "invalid url" in lowered or "not a valid url" in lowered:
         return "地址无效，请输入正确的视频链接"
+    if "protected by a password" in lowered or "wrong video password" in lowered:
+        return "该视频受密码保护，请在服务端配置 YTDLP_VIDEO_PASSWORD 后重试"
+    if "only works when logged-in" in lowered or "login required" in lowered:
+        return "该视频需要登录，请在服务端配置 YTDLP_COOKIE_FILE 后重试"
+    if "requested format is not available" in lowered:
+        return "所选画质当前不可用，请重新解析并选择其他画质"
+    if "drm protected" in lowered:
+        return "该视频没有可下载的非 DRM 格式"
     if "fresh cookies" in lowered or "抖音视频解析失败" in lowered:
         return "该抖音链接当前受风控，请使用抖音App分享链接后重试"
     if "抖音视频当前受限" in message:

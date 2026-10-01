@@ -7,10 +7,10 @@ import uuid
 from pathlib import Path
 from dotenv import load_dotenv
 
-from api.routes import router as api_router
-
 # 加载环境变量
 load_dotenv()
+
+from api.routes import router as api_router
 
 app = FastAPI(
     title="VideoGet API",
@@ -30,7 +30,7 @@ app.add_middleware(
 
 # 创建下载目录
 download_dir = Path(os.getenv("DOWNLOAD_DIR", "./downloads"))
-download_dir.mkdir(exist_ok=True)
+download_dir.mkdir(parents=True, exist_ok=True)
 
 # 挂载静态文件目录用于下载
 if not download_dir.exists():

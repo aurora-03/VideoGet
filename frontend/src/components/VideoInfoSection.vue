@@ -54,7 +54,7 @@
                       : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600'
                   ]"
                 >
-                  <div class="font-semibold">{{ format.quality }}</div>
+                  <div class="font-semibold">{{ format.label || format.quality }}</div>
                   <div class="text-xs opacity-70">{{ format.size }}</div>
                 </button>
               </div>
