@@ -10,6 +10,8 @@ VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API�
 
 当前界面为中文，使用 SaveAny 品牌名称。以下截图来自实际运行的前端，以及后端成功解析的 Bilibili 视频。
 
+通过 `?lang=zh-CN` 访问中文界面，通过 `?lang=en` 访问英文界面；英文 README 使用英文界面的独立截图。
+
 <p>
   <img src="docs/images/frontend-home.jpg" alt="VideoGet 首页与视频链接输入框" width="350" />
   <img src="docs/images/frontend-video-info.jpg" alt="视频解析结果、画质选择、MP3 和字幕选项" width="350" />

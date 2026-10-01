@@ -8,20 +8,20 @@
       <!-- 标签 -->
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm mb-8">
         <span class="w-2 h-2 rounded-full bg-green-400"></span>
-        <span class="text-slate-600 text-sm font-medium">支持 1800+ 平台，永久免费使用</span>
+        <span class="text-slate-600 text-sm font-medium">{{ t('支持 1800+ 平台，永久免费使用') }}</span>
       </div>
 
       <!-- 主标题 -->
       <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-        <span class="text-slate-800">万能视频下载器</span>
-        <span class="text-slate-800">，</span>
-        <span class="text-blue-600">一键保存</span>
+        <span class="text-slate-800">{{ t('万能视频下载器') }}</span>
+        <span class="text-slate-800">{{ t('，') }}</span>
+        <span class="text-blue-600">{{ t('一键保存') }}</span>
       </h1>
 
       <!-- 副标题 -->
       <p class="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto mb-10 leading-relaxed">
-        粘贴视频链接，智能解析，支持多种清晰度下载。YouTube、Bilibili、抖音、TikTok…<br>
-        随时随地，想下就下
+        {{ t('粘贴视频链接，智能解析，支持多种清晰度下载。YouTube、Bilibili、抖音、TikTok…') }}<br>
+        {{ t('随时随地，想下就下') }}
       </p>
 
       <div class="max-w-3xl mx-auto mb-6">
@@ -34,7 +34,7 @@
           <input
             v-model="url"
             type="url"
-            placeholder="粘贴视频链接"
+            :placeholder="t('粘贴视频链接')"
             class="flex-1 py-4 px-2 text-slate-700 placeholder:text-slate-400 text-lg outline-none"
             @keyup.enter="fetchVideoInfo"
           />
@@ -50,12 +50,12 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            {{ loading ? '解析中...' : '解析视频' }}
+            {{ t(loading ? '解析中...' : '解析视频') }}
           </button>
         </div>
       </div>
       <div class="flex items-center justify-center gap-3 text-sm">
-        <span class="text-slate-400">试试：</span>
+        <span class="text-slate-400">{{ t('试试：') }}</span>
         <button v-for="platform in quickPlatforms" :key="platform" @click="setExampleUrl(platform)" class="px-3 py-1.5 rounded-full border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all">
           {{ platform }}
         </button>
@@ -64,7 +64,7 @@
     <div v-if="error" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4" @click.self="closeErrorModal">
       <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200">
         <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-base font-semibold text-slate-800">解析失败</h3>
+          <h3 class="text-base font-semibold text-slate-800">{{ t('解析失败') }}</h3>
           <button
             @click="closeErrorModal"
             class="text-slate-400 hover:text-slate-600 transition-colors"
@@ -75,14 +75,14 @@
           </button>
         </div>
         <div class="px-5 py-5">
-          <p class="text-slate-600 leading-relaxed">{{ error }}</p>
+          <p class="text-slate-600 leading-relaxed">{{ t(error) }}</p>
         </div>
         <div class="px-5 pb-5 flex justify-end">
           <button
             @click="closeErrorModal"
             class="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors"
           >
-            我知道了
+            {{ t('我知道了') }}
           </button>
         </div>
       </div>
@@ -93,6 +93,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { t } from '../i18n.js'
 
 const emit = defineEmits(['video-info'])
 

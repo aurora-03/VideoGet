@@ -11,13 +11,13 @@
             </svg>
           </div>
           <span class="text-xl font-bold text-slate-800">SaveAny</span>
-          <span class="px-2 py-1 bg-slate-100 text-slate-500 text-xs rounded-md">万能视频下载</span>
+          <span class="px-2 py-1 bg-slate-100 text-slate-500 text-xs rounded-md">{{ t('万能视频下载') }}</span>
         </div>
 
         <!-- 导航链接 -->
         <div class="hidden md:flex items-center gap-8">
-          <a href="#features" class="text-slate-500 hover:text-blue-600 transition-colors font-medium">功能特性</a>
-          <a href="#" class="text-slate-500 hover:text-blue-600 transition-colors font-medium">支持平台</a>
+          <a href="#features" class="text-slate-500 hover:text-blue-600 transition-colors font-medium">{{ t('功能特性') }}</a>
+          <a href="#" class="text-slate-500 hover:text-blue-600 transition-colors font-medium">{{ t('支持平台') }}</a>
         </div>
       </div>
     </div>
@@ -25,4 +25,5 @@
 </template>
 
 <script setup>
+import { t } from '../i18n.js'
 </script>
