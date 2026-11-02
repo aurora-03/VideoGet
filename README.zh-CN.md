@@ -1,77 +1,76 @@
-# VideoGet
+<h1 align="center">VideoGet</h1>
 
-[English](README.md) | **简体中文**
-
-基于 Vue 3、FastAPI、yt-dlp 和 FFmpeg 的网页视频下载器。粘贴视频链接，查看可用画质，下载视频或提取 MP3 音频。
-
-前端默认英文，保留原始蓝色 SaveAny 布局。通过右上角“模型设置”配置模型服务，输出 Token 默认上限为 **16384**，界面允许调整至 32768，具体需符合服务商支持的范围。
-
-VideoGet 目前处于早期 MVP 阶段。下载流程已接入真实后端 API，原始项目文档中的部分功能仍处于规划阶段。
-
-## 页面截图
-
-首页截图展示当前中文界面和右上角模型设置入口；视频详情截图来自后端成功解析的 Bilibili 视频。界面保留 SaveAny 品牌名称。
-
-前端默认显示英文；通过 `?lang=zh-CN` 访问中文界面，通过 `?lang=en` 显式选择英文。英文 README 使用英文界面的独立截图。
-
-<p>
-  <img src="docs/images/frontend-home.jpg" alt="VideoGet 中文首页、视频链接输入框及右上角模型设置" width="800" />
-  <img src="docs/images/frontend-video-info.jpg" alt="视频解析结果、画质选择、MP3 和字幕选项" width="350" />
+<p align="center">
+  <strong>下载视频 · 提取字幕 · 语音转写 · AI 总结</strong><br />
+  把视频链接变成可保存的视频、音频和文字。
 </p>
 
-## 功能思维导图
+<p align="center">
+  <a href="https://github.com/aurora-03/VideoGet"><img src="https://img.shields.io/badge/status-early_MVP-f59e0b?style=flat-square" alt="Status: early MVP" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white" alt="Python 3.11 or newer" /></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20%2B-5FA04E?style=flat-square&amp;logo=nodedotjs&amp;logoColor=white" alt="Node.js 20 or newer" /></a>
+  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/Vue-3-4FC08D?style=flat-square&amp;logo=vuedotjs&amp;logoColor=white" alt="Vue 3" /></a>
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&amp;logo=fastapi&amp;logoColor=white" alt="Built with FastAPI" /></a>
+  <a href="https://github.com/yt-dlp/yt-dlp"><img src="https://img.shields.io/badge/powered_by-yt--dlp-2563eb?style=flat-square" alt="Powered by yt-dlp" /></a>
+</p>
 
-蓝色分支表示已实现能力，橙色分支表示待开发功能。
+<p align="center">
+  <a href="https://github.com/aurora-03/VideoGet/stargazers"><img src="https://img.shields.io/github/stars/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="GitHub stars" /></a>
+  <a href="https://github.com/aurora-03/VideoGet/commits/main/"><img src="https://img.shields.io/github/last-commit/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="Last commit" /></a>
+</p>
 
-![VideoGet 功能思维导图](docs/images/feature-mindmap.zh-CN.png)
+<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong></p>
 
-[可编辑 SVG](docs/images/feature-mindmap.zh-CN.svg) · [English map](docs/images/feature-mindmap.en.png)
+<p align="center"><a href="#快速开始">快速开始</a> · <a href="#功能">功能亮点</a> · <a href="#平台支持">平台支持</a> · <a href="#字幕语音转文字与-ai">字幕与 AI</a> · <a href="#api">API</a></p>
 
-安装 `rsvg-convert` 后，可运行 `python3 scripts/generate-feature-maps.py` 重新生成两种语言的导图。
+---
+
+基于 **Vue 3 + FastAPI + yt-dlp + FFmpeg** 的网页视频工具。粘贴链接、查看可用画质，下载视频或提取 MP3；也可以提取字幕、转写语音，再翻译或生成总结。
+
+> **项目状态：早期 MVP。** 下载与字幕 / AI 流程已接入真实后端。批量下载、账户和持久化历史仍待开发；平台可用性取决于具体视频及其访问条件。
 
 ## 功能
 
-- 解析视频标题、作者、封面、时长和可用画质。
-- 下载含音轨的视频，或提取 MP3 音频。
-- 通过进度条查看后台下载任务。
-- 提取已有字幕，或通过云端 / 本地 Whisper 将语音转为文字，支持 SRT 和 TXT 下载。
-- 配置模型服务后，可翻译带时间轴的字幕，并生成基于文字的 AI 总结。
-- 可在前端配置 OpenAI / Anthropic 兼容服务或本地 Ollama；语音可单独接入云端服务，也可使用本地 Whisper。
-- 使用内置适配器解析抖音和快手的公开移动分享页。
-- 可配置服务端 Cookie 和已知视频密码，访问已有授权的内容。
-- 响应式 Vue 界面及 Docker Compose 配置。
-
-AI 功能需要配置模型服务，缺少配置时界面会明确提示。完整批量下载流程、账户及持久化下载历史尚未实现。视频下载会返回可用字幕文件地址，没有字幕时也会提示。
-
-## 平台支持
-
-| 平台 | 实现方式 | 样例验证结果 |
+| | 能力 | 你可以做什么 |
 | --- | --- | --- |
-| YouTube | yt-dlp | 下载及文件交付通过 |
-| Bilibili（哔哩哔哩） | yt-dlp，附加封面回退 | 下载及文件交付通过 |
-| 抖音 | 内置移动分享页解析 | 视频及 MP3 下载通过 |
-| 快手 | 内置移动分享页解析 | 下载及文件交付通过 |
-| TikTok | yt-dlp | 下载及文件交付通过 |
-| Instagram | yt-dlp | 下载及文件交付通过 |
-| Twitter / X | yt-dlp | 下载及文件交付通过 |
-| Facebook | yt-dlp；分辨率未知时使用最佳画质 | 下载及文件交付通过 |
-| Vimeo | yt-dlp，附加播放器地址回退 | 密码保护样例在提供其公开测试密码后通过 |
-| Twitch | yt-dlp | 视频片段下载及文件交付通过 |
+| 🎬 | 视频下载 | 查看标题、作者、封面、时长与可用画质，选择画质并跟踪下载进度 |
+| 🎵 | 音频提取 | 将视频中的音频保存为 MP3 |
+| 📝 | 字幕与转写 | 提取平台字幕，或使用云端 / 本地 Whisper，导出 SRT 和 TXT |
+| 🌐 | 字幕翻译 | 在支持的七种语言间翻译字幕，保留原始时间轴 |
+| ✨ | AI 总结 | 分段处理长文本并合并总结，复用已经提取的原文 |
+| ⚙️ | 灵活模型配置 | 在浏览器接入 OpenAI / Anthropic 兼容服务或本地 Ollama，语音服务可单独配置 |
+| 📱 | 分享链接支持 | 使用内置适配器解析抖音、快手公开移动分享页 |
+| 🐳 | 本地部署 | 响应式网页界面，支持本地运行及 Docker Compose |
 
-以上结果来自 `dev` 分支，测试使用 yt-dlp `2026.8.19`。成功样例均检查了文件交付，并通过 FFprobe 验证媒体有效；不代表这些平台的所有视频都能下载。其他 yt-dlp 支持的网站也可能适用。
+字幕提取无需 AI 密钥；云端语音、翻译和总结需要相应服务配置。视频下载可附带可用字幕，未下载到字幕时会给出提示。
 
-抖音和快手适配器支持视频作品，不支持图文作品。抖音解析会保留游客会话 Cookie，并对暂时没有视频数据的响应进行有限重试。两个适配器均不再依赖此前缺失的 `backend/third_party` 目录。
+**使用流程：** 粘贴链接 → 解析视频 → 选择画质并下载，或提取字幕 → 翻译 / 总结 → 导出文件。
 
-Vimeo 原始测试样例需要密码；另一个公开样例返回了 DRM 保护的视频流，无法下载。私密、需要登录、密码保护、地区限制及 DRM 内容仍受原有访问条件限制；不支持 DRM 视频下载。
+## 页面截图
 
-## 环境要求
+<p align="center">
+  <img src="docs/images/frontend-home.jpg" alt="VideoGet 中文首页，包含视频链接输入框与模型设置入口" width="900" />
+</p>
+
+<details>
+<summary>查看视频详情与下载选项</summary>
+
+<p align="center">
+  <img src="docs/images/frontend-video-info.jpg" alt="Bilibili 视频解析结果、画质选择、MP3 与字幕选项" width="420" />
+</p>
+
+</details>
+
+界面保留蓝色 SaveAny 设计，默认英文；访问 `http://localhost:3000/?lang=zh-CN` 可切换到中文，`?lang=en` 可切换到英文。右上角“模型设置”用于配置 AI 服务。
+
+## 快速开始
+
+### 环境要求
 
 - Python 3.11 或更高版本。
 - Node.js 20 或更高版本及 npm。
 - `PATH` 中可调用 FFmpeg 和 FFprobe，用于媒体合并、MP3 转换和真实下载验证。
 - 使用容器时需要 Docker 和 Docker Compose，后端镜像已包含 FFmpeg。
-
-## 快速开始
 
 以下命令使用 Bash 或 zsh。默认版本位于 `main` 分支，后续开发使用 `dev` 分支。
 
@@ -120,6 +119,42 @@ docker compose up --build -d
 前后端端口与本地开发相同，下载文件持久保存在 `backend/downloads`。
 
 前端默认请求 `http://localhost:8000/api`。部署到远程服务器、使用 HTTPS 或通过其他设备访问前，可在 `frontend/.env` 中设置 `VITE_API_BASE_URL`，并配置后端 CORS 来源。前端容器目前使用 Vite 预览服务，生产部署配置仍需完善。
+
+## 平台支持
+
+| 平台 | 实现方式 | 样例验证结果 |
+| --- | --- | --- |
+| YouTube | yt-dlp | 下载及文件交付通过 |
+| Bilibili（哔哩哔哩） | yt-dlp，附加封面回退 | 下载及文件交付通过 |
+| 抖音 | 内置移动分享页解析 | 视频及 MP3 下载通过 |
+| 快手 | 内置移动分享页解析 | 下载及文件交付通过 |
+| TikTok | yt-dlp | 下载及文件交付通过 |
+| Instagram | yt-dlp | 下载及文件交付通过 |
+| Twitter / X | yt-dlp | 下载及文件交付通过 |
+| Facebook | yt-dlp；分辨率未知时使用最佳画质 | 下载及文件交付通过 |
+| Vimeo | yt-dlp，附加播放器地址回退 | 密码保护样例在提供其公开测试密码后通过 |
+| Twitch | yt-dlp | 视频片段下载及文件交付通过 |
+
+以上结果来自 `dev` 分支，测试使用 yt-dlp `2026.8.19`。成功样例均检查了文件交付，并通过 FFprobe 验证媒体有效；不代表这些平台的所有视频都能下载。其他 yt-dlp 支持的网站也可能适用。
+
+抖音和快手适配器支持视频作品，不支持图文作品。抖音解析会保留游客会话 Cookie，并对暂时没有视频数据的响应进行有限重试。两个适配器均不再依赖此前缺失的 `backend/third_party` 目录。
+
+Vimeo 原始测试样例需要密码；另一个公开样例返回了 DRM 保护的视频流，无法下载。私密、需要登录、密码保护、地区限制及 DRM 内容仍受原有访问条件限制；不支持 DRM 视频下载。
+
+## 功能思维导图
+
+<details>
+<summary>展开完整功能导图（含规划中功能）</summary>
+
+蓝色分支表示已实现能力，橙色分支表示待开发功能。
+
+![VideoGet 功能思维导图](docs/images/feature-mindmap.zh-CN.png)
+
+[可编辑 SVG](docs/images/feature-mindmap.zh-CN.svg) · [English map](docs/images/feature-mindmap.en.png)
+
+安装 `rsvg-convert` 后，可运行 `python3 scripts/generate-feature-maps.py` 重新生成两种语言的导图。
+
+</details>
 
 ## 配置
 

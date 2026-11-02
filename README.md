@@ -1,75 +1,76 @@
-# VideoGet
+<h1 align="center">VideoGet</h1>
 
-**English** | [简体中文](README.zh-CN.md)
-
-A web-based video downloader built with Vue 3, FastAPI, yt-dlp, and FFmpeg. Paste a video link, inspect its available quality options, and download the video or extract an MP3.
-
-The frontend defaults to English and retains the original blue SaveAny layout. Model services can be configured from **Model settings** in the top-right navigation. The default output token limit is **16,384**, adjustable up to 32,768 within the model service's supported limits.
-
-VideoGet is an early MVP. The download workflow uses real backend APIs; some features advertised in the original project documents are still planned.
-
-## Screenshots
-
-The homepage capture shows the current English interface, including the top-right model settings entry. The video-details capture shows a real YouTube video parsed by the backend. The [interface](http://localhost:3000/) defaults to English; `?lang=zh-CN` selects Chinese and `?lang=en` explicitly selects English.
-
-<p>
-  <img src="docs/images/frontend-home.en.jpg" alt="English VideoGet homepage with video URL input" width="800" />
-  <img src="docs/images/frontend-video-info.en.jpg" alt="English video details with quality, MP3 and subtitle options" width="800" />
+<p align="center">
+  <strong>Download videos. Extract subtitles. Turn speech into insights.</strong><br />
+  Your video links, saved as video, audio and text.
 </p>
 
-## Feature mind map
+<p align="center">
+  <a href="https://github.com/aurora-03/VideoGet"><img src="https://img.shields.io/badge/status-early_MVP-f59e0b?style=flat-square" alt="Status: early MVP" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white" alt="Python 3.11 or newer" /></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20%2B-5FA04E?style=flat-square&amp;logo=nodedotjs&amp;logoColor=white" alt="Node.js 20 or newer" /></a>
+  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/Vue-3-4FC08D?style=flat-square&amp;logo=vuedotjs&amp;logoColor=white" alt="Vue 3" /></a>
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&amp;logo=fastapi&amp;logoColor=white" alt="Built with FastAPI" /></a>
+  <a href="https://github.com/yt-dlp/yt-dlp"><img src="https://img.shields.io/badge/powered_by-yt--dlp-2563eb?style=flat-square" alt="Powered by yt-dlp" /></a>
+</p>
 
-Blue branches describe implemented capabilities; the orange branch contains planned features.
+<p align="center">
+  <a href="https://github.com/aurora-03/VideoGet/stargazers"><img src="https://img.shields.io/github/stars/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="GitHub stars" /></a>
+  <a href="https://github.com/aurora-03/VideoGet/commits/main/"><img src="https://img.shields.io/github/last-commit/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="Last commit" /></a>
+</p>
 
-![VideoGet feature mind map](docs/images/feature-mindmap.en.png)
+<p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 
-[Editable SVG](docs/images/feature-mindmap.en.svg) · [中文导图](docs/images/feature-mindmap.zh-CN.png)
+<p align="center"><a href="#quick-start">Quick start</a> · <a href="#features">Features</a> · <a href="#platform-support">Platforms</a> · <a href="#subtitles-speech-and-ai">Subtitles &amp; AI</a> · <a href="#api">API</a></p>
 
-To regenerate both maps, run `python3 scripts/generate-feature-maps.py` with `rsvg-convert` installed.
+---
+
+A web-based video toolkit built with **Vue 3 + FastAPI + yt-dlp + FFmpeg**. Paste a link, inspect available quality options, and save the video or an MP3. Extract captions or transcribe speech, then translate the transcript or generate a summary.
+
+> **Status: early MVP.** Download and subtitle / AI workflows use real backend APIs. Batch downloads, accounts and persistent history are still planned; platform availability depends on the video and its access conditions.
 
 ## Features
 
-- Parse video titles, authors, thumbnails, durations, and available quality options.
-- Download videos with audio, or extract audio as MP3.
-- Track background downloads with a progress indicator.
-- Extract existing captions or transcribe speech using cloud or local Whisper; download SRT and TXT results.
-- Translate timed subtitles and generate transcript-based AI summaries with a configured model service.
-- Configure OpenAI-compatible, Anthropic-compatible or local Ollama text services in the browser; speech can use a separate cloud service or local Whisper.
-- Parse public Douyin and Kuaishou mobile share pages with built-in adapters.
-- Use optional server-side cookies and known video passwords for authorized content.
-- Responsive Vue interface and Docker Compose setup.
-
-AI features require model configuration; missing credentials are shown in the interface. A complete batch-download workflow, accounts, and persistent download history are not implemented. Video downloads expose available subtitle files and report when none were downloaded.
-
-## Platform support
-
-| Platform | Implementation | Sample verification |
+| | Capability | What you can do |
 | --- | --- | --- |
-| YouTube | yt-dlp | Download and file delivery passed |
-| Bilibili | yt-dlp with thumbnail fallback | Download and file delivery passed |
-| Douyin / 抖音 | Built-in mobile share-page parser | Video and MP3 downloads passed |
-| Kuaishou / 快手 | Built-in mobile share-page parser | Download and file delivery passed |
-| TikTok | yt-dlp | Download and file delivery passed |
-| Instagram | yt-dlp | Download and file delivery passed |
-| Twitter / X | yt-dlp | Download and file delivery passed |
-| Facebook | yt-dlp; best-quality option when dimensions are unknown | Download and file delivery passed |
-| Vimeo | yt-dlp with player-URL fallback | Password-protected fixture passed with its documented password |
-| Twitch | yt-dlp | Clip download and file delivery passed |
+| 🎬 | Video downloads | Inspect metadata and available quality options, choose a resolution and track progress |
+| 🎵 | Audio extraction | Save a video's audio as MP3 |
+| 📝 | Captions & transcription | Extract platform captions or use cloud / local Whisper; export SRT and TXT |
+| 🌐 | Subtitle translation | Translate between seven supported languages while preserving timestamps |
+| ✨ | AI summaries | Summarize long transcripts in chunks, merge results and reuse extracted text |
+| ⚙️ | Flexible model settings | Configure OpenAI / Anthropic-compatible services or local Ollama in the browser, with separate speech settings |
+| 📱 | Share-link adapters | Parse public Douyin and Kuaishou mobile share pages |
+| 🐳 | Local deployment | Use a responsive web interface with local development or Docker Compose |
 
-These results describe individual samples tested on the `dev` branch with yt-dlp `2026.8.19`. Successful samples were checked for file delivery and valid media using FFprobe. They do not guarantee that every video on a platform can be downloaded. Other websites supported by yt-dlp may also work.
+Caption extraction needs no AI key; cloud speech, translation and summaries require the corresponding service configuration. Video downloads expose available subtitle files and report when none were downloaded.
 
-Douyin and Kuaishou adapters support video posts, not image galleries. Douyin reuses guest-session cookies and retries temporary empty responses. Neither adapter requires the previously missing `backend/third_party` directory.
+**Workflow:** Paste a link → inspect the video → choose quality and download, or extract captions → translate / summarize → export files.
 
-Vimeo's original test sample requires a password. Another public sample exposed DRM-protected streams and could not be downloaded. Private, login-required, password-protected, region-restricted, and DRM-protected content remain subject to their original restrictions; DRM downloads are not supported.
+## Screenshots
 
-## Requirements
+<p align="center">
+  <img src="docs/images/frontend-home.en.jpg" alt="VideoGet English homepage with video URL input and model settings" width="900" />
+</p>
+
+<details>
+<summary>View video details and download options</summary>
+
+<p align="center">
+  <img src="docs/images/frontend-video-info.en.jpg" alt="Parsed YouTube video with quality, MP3 and subtitle options" width="900" />
+</p>
+
+</details>
+
+The interface keeps the blue SaveAny design and defaults to English. Use `http://localhost:3000/?lang=zh-CN` for Chinese or `?lang=en` for English. Open **Model settings** in the top-right navigation to configure AI services.
+
+## Quick start
+
+### Requirements
 
 - Python 3.11 or newer.
 - Node.js 20 or newer and npm.
 - FFmpeg and FFprobe available on `PATH` for media merging, MP3 conversion, and live verification.
 - Docker with Docker Compose, if using containers. The backend image includes FFmpeg.
-
-## Quick start
 
 The commands below use Bash or zsh. Clone `main` for the default version; ongoing development uses `dev`.
 
@@ -118,6 +119,42 @@ docker compose up --build -d
 The frontend and backend use the same ports as local development. Downloaded files are persisted in `backend/downloads`.
 
 The frontend defaults to `http://localhost:8000/api`. Set `VITE_API_BASE_URL` using `frontend/.env` before hosting remotely, using HTTPS, or accessing from another device, and configure backend CORS origins. The frontend container currently runs Vite's preview server; production deployment configuration still needs improvement.
+
+## Platform support
+
+| Platform | Implementation | Sample verification |
+| --- | --- | --- |
+| YouTube | yt-dlp | Download and file delivery passed |
+| Bilibili | yt-dlp with thumbnail fallback | Download and file delivery passed |
+| Douyin / 抖音 | Built-in mobile share-page parser | Video and MP3 downloads passed |
+| Kuaishou / 快手 | Built-in mobile share-page parser | Download and file delivery passed |
+| TikTok | yt-dlp | Download and file delivery passed |
+| Instagram | yt-dlp | Download and file delivery passed |
+| Twitter / X | yt-dlp | Download and file delivery passed |
+| Facebook | yt-dlp; best-quality option when dimensions are unknown | Download and file delivery passed |
+| Vimeo | yt-dlp with player-URL fallback | Password-protected fixture passed with its documented password |
+| Twitch | yt-dlp | Clip download and file delivery passed |
+
+These results describe individual samples tested on the `dev` branch with yt-dlp `2026.8.19`. Successful samples were checked for file delivery and valid media using FFprobe. They do not guarantee that every video on a platform can be downloaded. Other websites supported by yt-dlp may also work.
+
+Douyin and Kuaishou adapters support video posts, not image galleries. Douyin reuses guest-session cookies and retries temporary empty responses. Neither adapter requires the previously missing `backend/third_party` directory.
+
+Vimeo's original test sample requires a password. Another public sample exposed DRM-protected streams and could not be downloaded. Private, login-required, password-protected, region-restricted, and DRM-protected content remain subject to their original restrictions; DRM downloads are not supported.
+
+## Feature mind map
+
+<details>
+<summary>Explore the full feature map, including planned capabilities</summary>
+
+Blue branches describe implemented capabilities; the orange branch contains planned features.
+
+![VideoGet feature mind map](docs/images/feature-mindmap.en.png)
+
+[Editable SVG](docs/images/feature-mindmap.en.svg) · [中文导图](docs/images/feature-mindmap.zh-CN.png)
+
+To regenerate both maps, run `python3 scripts/generate-feature-maps.py` with `rsvg-convert` installed.
+
+</details>
 
 ## Configuration
 
