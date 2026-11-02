@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License: MIT" /></a>
   <a href="https://github.com/aurora-03/VideoGet/stargazers"><img src="https://img.shields.io/github/stars/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="GitHub stars" /></a>
   <a href="https://github.com/aurora-03/VideoGet/commits/main/"><img src="https://img.shields.io/github/last-commit/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="Last commit" /></a>
 </p>
@@ -343,4 +344,4 @@ English is the default in `README.md`; Simplified Chinese is maintained in `READ
 
 Issues and pull requests are welcome. Use the `dev` branch for current development and include relevant regression checks with changes.
 
-Download only content you are authorized to save, and comply with the relevant platform terms and copyright requirements. The original project documentation states an MIT license, but this checkout does not yet include a standalone `LICENSE` file.
+Download only content you are authorized to save, and comply with the relevant platform terms and copyright requirements. This project is licensed under the [MIT License](LICENSE).

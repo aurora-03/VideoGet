@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License: MIT" /></a>
   <a href="https://github.com/aurora-03/VideoGet/stargazers"><img src="https://img.shields.io/github/stars/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="GitHub stars" /></a>
   <a href="https://github.com/aurora-03/VideoGet/commits/main/"><img src="https://img.shields.io/github/last-commit/aurora-03/VideoGet?style=flat-square&amp;color=2563eb" alt="Last commit" /></a>
 </p>
@@ -343,4 +344,4 @@ VideoGet/
 
 欢迎提交 Issue 和 Pull Request。当前开发使用 `dev` 分支，修改时请附上相关回归验证。
 
-仅下载已有权限保存的内容，并遵守平台条款及版权要求。原始项目文档声明使用 MIT 许可证，但当前仓库尚未包含独立的 `LICENSE` 文件。
+仅下载已有权限保存的内容，并遵守平台条款及版权要求。本项目采用 [MIT 许可证](LICENSE)。
